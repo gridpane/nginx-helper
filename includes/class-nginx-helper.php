@@ -174,14 +174,14 @@ class Nginx_Helper {
 		if ( ! empty( $nginx_helper_admin->options['cache_method'] ) && 'enable_redis' === $nginx_helper_admin->options['cache_method'] ) {
 
 			if ( class_exists( 'Relay' ) ) {
-                $php_redis_client = 'relay';
+			    $php_redis_client = 'relay';
 			} elseif ( class_exists( 'Redis' ) ) {
-                $php_redis_client = 'phpredis';
+			    $php_redis_client = 'phpredis';
 			} else {
-				$php_redis_client = 'predis';
+			    $php_redis_client = 'predis';
 			}
 
-            require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-redis-purger.php';
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-redis-purger.php';
 			$nginx_purger = new Redis_Purger( $php_redis_client );
 
 		} else {
