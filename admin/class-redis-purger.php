@@ -27,102 +27,123 @@ class Redis_Purger extends Purger {
 	 */
 	public $redis_object;
 
-	public $php_redis_connector;
+	public $php_redis_client;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    2.0.0
 	 */
-	public function __construct( $php_redis_connector ) {
+	public function __construct( $php_redis_client = 'phpredis' ) {
 
 		global $nginx_helper_admin;
 
-		$this->php_redis_connector = $php_redis_connector;
+		$this->php_redis_client = $php_redis_client;
 
-		if ( 'phpredis' === $this->php_redis_connector ) {
+		$connection_array = [];
+		$path             = $nginx_helper_admin->options['redis_unix_socket'];
+		$username         = $nginx_helper_admin->options['redis_username'];
+		$password         = $nginx_helper_admin->options['redis_password'];
+		$redis_database   = $nginx_helper_admin->options['redis_database'];
 
-			try {
+		try {
 
-				$this->redis_object = new Redis();
+			switch ( $php_redis_client ) {
 
-				/*Composer sets default to version that doesn't allow modern php*/
-				$redis_connection_others_array = array();
+				case 'predis':
 
-				$path = $nginx_helper_admin->options['redis_unix_socket'];
+					if ( ! class_exists('Predis\Autoloader')) {
+						require_once NGINX_HELPER_BASEPATH . 'admin/predis.php';
+					}
 
-				if ($path) {
-					$host = $path;
-					$port = 0;
-				} else {
-					$host = $nginx_helper_admin->options['redis_hostname'];
-					$port = $nginx_helper_admin->options['redis_port'];
-				}
+					Predis\Autoloader::register();
 
-				$username = $nginx_helper_admin->options['redis_username'];
-				$password = $nginx_helper_admin->options['redis_password'];
+					if ($path) {
+						$connection_array['path'] = $path;
+					} else {
+						$connection_array['host'] = $nginx_helper_admin->options['redis_hostname'];;
+						$connection_array['port'] = $nginx_helper_admin->options['redis_port'];
+					}
 
-				if ($username && $password) {
-					$redis_connection_others_array['auth'] = [$username, $password];
-				}
+					if ($username && $password) {
+						$connection_array['username'] = $username;
+						$connection_array['password'] = $password;
+					}
 
-				$this->redis_object->connect(
-					$host,
-					$port,
-					5,
-					'',
-					100,
-					1.5,
-					$redis_connection_others_array
-				);
+					$connection_array['timeout']            = $nginx_helper_admin->options['redis_timeout'];
+					$connection_array['read_write_timeout'] = $nginx_helper_admin->options['redis_read_timeout'];
 
-				$redis_database = $nginx_helper_admin->options['redis_database'];
+					$this->redis_object = new Predis\Client($connection_array);
 
-				$this->redis_object->select($redis_database);
+					$this->redis_object->connect();
 
-			} catch (Exception $e) {
-				$this->log($e->getMessage(), 'ERROR');
+					break;
+
+				case 'relay':
+
+					$this->redis_object = new Relay\Relay;
+
+					if ($path) {
+						$host = $path;
+						$port = -1;
+					} else {
+						$host = $nginx_helper_admin->options['redis_hostname'];
+						$port = $nginx_helper_admin->options['redis_port'];
+					}
+
+					$this->redis_object->connect(
+						$host,
+						$port,
+						$nginx_helper_admin->options['redis_timeout'],
+						'',
+						300,
+						$nginx_helper_admin->options['redis_read_timeout']
+					);
+
+					if ($username && $password) {
+						$this->redis_object->auth([$username, $password]);
+					}
+
+					$this->redis_object->select($redis_database);
+
+					break;
+
+				case 'phpredis':
+
+				default:
+
+					$this->redis_object = new Redis();
+
+					if ($path) {
+						$host = $path;
+						$port = -1;
+					} else {
+						$host = $nginx_helper_admin->options['redis_hostname'];
+						$port = $nginx_helper_admin->options['redis_port'];
+					}
+
+					if ($username && $password) {
+						$connection_array['auth'] = [$username, $password];
+					}
+
+					$this->redis_object->connect(
+						$host,
+						$port,
+						$nginx_helper_admin->options['redis_timeout'],
+						'',
+						300,
+						$nginx_helper_admin->options['redis_read_timeout'],
+						$connection_array
+					);
+
+					$this->redis_object->select($redis_database);
+
+					break;
 			}
 
-		} else {
-
-			if ( ! class_exists( 'Predis\Autoloader' ) ) {
-				require_once NGINX_HELPER_BASEPATH . 'admin/predis.php';
-			}
-
-			Predis\Autoloader::register();
-
-			/*Composer sets default to version that doesn't allow modern php*/
-			$predis_connection_array = array();
-
-			$path                                =  $nginx_helper_admin->options['redis_unix_socket'];
-			$username                            =  $nginx_helper_admin->options['redis_username'];
-			$password                            =  $nginx_helper_admin->options['redis_password'];
-			$predis_connection_array['database'] = $nginx_helper_admin->options['redis_database'];
-
-			if ( $path ) {
-				$predis_connection_array['path'] = $path;
-			} else {
-				$predis_connection_array['host'] = $nginx_helper_admin->options['redis_hostname'];;
-				$predis_connection_array['port'] = $nginx_helper_admin->options['redis_port'];
-			}
-
-			if ( $username && $password ) {
-				$predis_connection_array['username'] = $username;
-				$predis_connection_array['password'] = $password;
-			}
-
-			// redis server parameter.
-			$this->redis_object = new Predis\Client( $predis_connection_array );
-
-			try {
-				$this->redis_object->connect();
-			} catch ( Exception $e ) {
-				$this->log( $e->getMessage(), 'ERROR' );
-			}
-
+		} catch ( Exception $e ) {
+			$this->log( $e->getMessage(), 'ERROR' );
 		}
-
 	}
 
 	/**
@@ -287,7 +308,6 @@ class Redis_Purger extends Purger {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -301,15 +321,15 @@ class Redis_Purger extends Purger {
 	public function delete_single_key( $key ) {
 
 		try {
-			if ( 'phpredis' === $this->php_redis_connector ) {
-				return $this->redis_object->del($key);
-			} else {
+			if ( 'predis' === $this->php_redis_client ) {
 				return $this->redis_object->executeRaw( array( 'DEL', $key ) );
+			} else {
+				return $this->redis_object->del($key);
 			}
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return 187;
 		}
-
 	}
 
 	/**
@@ -343,6 +363,7 @@ LUA;
 			return $this->redis_object->eval( $lua, array( $pattern ), 1 );
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return 187;
 		}
 
 	}

@@ -280,17 +280,18 @@ class Nginx_Helper_Admin {
 			'redis_username'                        => '',
 			'redis_password'                        => '',
 			'redis_database'                        => 0,
+			'redis_timeout'                         => 5,
+			'redis_read_timeout'                    => 1.5,
 			'purge_url'                             => '',
-			'auth_enabled_by_constant'              => 0,
-			'cache_method_set_by_constant'          => 0,
-			'purge_method_set_by_constant'          => 0,
-			'redis_hostname_set_by_constant'        => 0,
-			'redis_port_set_by_constant'            => 0,
-			'redis_unix_socket_set_by_constant'     => 0,
-			'redis_prefix_set_by_constant'          => 0,
-			'redis_database_set_by_constant'        => 0,
-			'redis_username_set_by_constant'        => 0,
-			'redis_password_socket_set_by_constant' => 0,
+			'cache_method_set_by_constant'          => false,
+			'purge_method_set_by_constant'          => false,
+			'redis_hostname_set_by_constant'        => false,
+			'redis_port_set_by_constant'            => false,
+			'redis_unix_socket_set_by_constant'     => false,
+			'redis_prefix_set_by_constant'          => false,
+			'redis_database_set_by_constant'        => false,
+			'redis_username_set_by_constant'        => false,
+			'redis_password_socket_set_by_constant' => false,
 			'homepage_purge_post_type_exceptions'   => array(),
 		);
 
@@ -317,19 +318,28 @@ class Nginx_Helper_Admin {
 			$this->nginx_helper_default_settings()
 		);
 
-		if ( defined( 'RT_WP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS' ) ) {
-			$data['homepage_purge_post_type_exceptions'] = RT_WP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS;
+		if ( defined( 'GP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS' ) ) {
+			$data['homepage_purge_post_type_exceptions'] = GP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS;
         }
 
-		if ( defined( 'RT_WP_NGINX_HELPER_PURGE_METHOD' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_PURGE_METHOD' ) ) {
+			$data['purge_method']                        = GP_NGINX_HELPER_PURGE_METHOD;
+			$data['purge_method_set_by_constant']        = 'GP_NGINX_HELPER_PURGE_METHOD';
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_PURGE_METHOD' ) ) {
 			$data['purge_method']                        = RT_WP_NGINX_HELPER_PURGE_METHOD;
-			$data['purge_method_set_by_constant']        = 1;
+			$data['purge_method_set_by_constant']          = 'RT_WP_NGINX_HELPER_PURGE_METHOD';
 		}
 
-		if ( defined( 'RT_WP_NGINX_HELPER_CACHE_METHOD' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_CACHE_METHOD' ) ) {
+			$data['cache_method']                       = GP_NGINX_HELPER_CACHE_METHOD;
+			$data['cache_method_set_by_constant']       = 'GP_NGINX_HELPER_PURGE_METHOD';
+			if ( 'enable_fastcgi' === GP_NGINX_HELPER_CACHE_METHOD ) {
+				$data['enable_purge']              = 1;
+ 			    return $data;
+			}
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_CACHE_METHOD' ) ) {
 			$data['cache_method']                       = RT_WP_NGINX_HELPER_CACHE_METHOD;
-			$data['cache_method_set_by_constant']       = 1;
-
+			$data['cache_method_set_by_constant']       = 'RT_WP_NGINX_HELPER_PURGE_METHOD';
 			if ( 'enable_fastcgi' === RT_WP_NGINX_HELPER_CACHE_METHOD ) {
 				$data['enable_purge']              = 1;
  			    return $data;
@@ -343,43 +353,80 @@ class Nginx_Helper_Admin {
 		$redis_port                                = false;
 		$redis_unix_socket                         = false;
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_PREFIX' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_REDIS_PREFIX' ) ) {
+			$redis_prefix                         = GP_NGINX_HELPER_REDIS_PREFIX;
+			$data['redis_prefix_set_by_constant'] = 'GP_NGINX_HELPER_PURGE_METHOD';
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_PREFIX' ) ) {
 			$redis_prefix                         = RT_WP_NGINX_HELPER_REDIS_PREFIX;
+			$data['redis_prefix_set_by_constant'] = 'RT_WP_NGINX_HELPER_PURGE_METHOD';
+		}
+		if ( $redis_prefix ) {
 			$data['redis_prefix']                 = $redis_prefix;
-			$data['redis_prefix_set_by_constant'] = 1;
-		}
+        }
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_PORT' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_REDIS_PORT' ) ) {
+			$redis_port                         = GP_NGINX_HELPER_REDIS_PORT;
+			$data['redis_port_set_by_constant'] = 'GP_NGINX_HELPER_PURGE_METHOD';
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_PORT' ) ) {
 			$redis_port                         = RT_WP_NGINX_HELPER_REDIS_PORT;
+			$data['redis_port_set_by_constant'] = 'RT_WP_NGINX_HELPER_PURGE_METHOD';
+		}
+		if ( $redis_port ) {
 			$data['redis_port']                 = $redis_port;
-			$data['redis_port_set_by_constant'] = 1;
-		}
+        }
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_HOSTNAME' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_REDIS_HOSTNAME' ) ) {
+			$redis_hostname                         = GP_NGINX_HELPER_REDIS_HOSTNAME;
+			$data['redis_hostname_set_by_constant'] = 'GP_NGINX_HELPER_REDIS_HOSTNAME';
+		} elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_HOSTNAME' ) ) {
 			$redis_hostname                         = RT_WP_NGINX_HELPER_REDIS_HOSTNAME;
+			$data['redis_hostname_set_by_constant'] = 'RT_WP_NGINX_HELPER_REDIS_HOSTNAME';
+		}
+		if ( $redis_hostname ) {
 			$data['redis_hostname']                 = $redis_hostname;
-			$data['redis_hostname_set_by_constant'] = 1;
-		}
+        }
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET' ) ) {
+		if ( defined( 'GP_NGINX_HELPER_REDIS_UNIX_SOCKET' ) ) {
+			$redis_unix_socket                         = GP_NGINX_HELPER_REDIS_UNIX_SOCKET;
+			$data['redis_unix_socket_set_by_constant'] = 'GP_NGINX_HELPER_REDIS_HOSTNAME';
+		} elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET' ) ) {
 			$redis_unix_socket                         = RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET;
+			$data['redis_unix_socket_set_by_constant'] = 'RT_WP_NGINX_HELPER_REDIS_HOSTNAME';
+		}
+		if ( $redis_unix_socket ) {
 			$data['redis_unix_socket']                 = $redis_unix_socket;
-			$data['redis_unix_socket_set_by_constant'] = 1;
+        }
+
+		if ( defined( 'GP_NGINX_HELPER_REDIS_DATABASE' ) ) {
+			$data['redis_database']                 = GP_NGINX_HELPER_REDIS_DATABASE;
+			$data['redis_database_set_by_constant'] = 'GP_NGINX_HELPER_REDIS_DATABASE';
+		} elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_DATABASE' ) ) {
+			$data['redis_database']                 = RT_WP_NGINX_HELPER_REDIS_DATABASE;
+			$data['redis_database_set_by_constant'] = 'RT_WP_NGINX_HELPER_REDIS_DATABASE';
 		}
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_DATABASE' ) ) {
-			$data['redis_database']           = RT_WP_NGINX_HELPER_REDIS_DATABASE;
-			$data['redis_database_set_by_constant'] = 1;
+		if ( defined( 'GP_NGINX_HELPER_REDIS_USERNAME' ) ) {
+			$data['redis_username']                 = GP_NGINX_HELPER_REDIS_USERNAME;
+			$data['redis_username_set_by_constant'] = 'GP_NGINX_HELPER_REDIS_USERNAME';
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_USERNAME' ) ) {
+			$data['redis_username']                 = RT_WP_NGINX_HELPER_REDIS_USERNAME;
+			$data['redis_username_set_by_constant'] = 'RT_WP_NGINX_HELPER_REDIS_USERNAME';
 		}
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_USERNAME' ) ) {
-			$data['redis_username']           = RT_WP_NGINX_HELPER_REDIS_USERNAME;
-			$data['redis_username_set_by_constant'] = 1;
+		if ( defined( 'GP_NGINX_HELPER_REDIS_PASSWORD' ) ) {
+			$data['redis_password']                 = GP_NGINX_HELPER_REDIS_PASSWORD;
+			$data['redis_password_set_by_constant'] = 'GP_NGINX_HELPER_REDIS_PASSWORD';
+        } elseif ( defined( 'RT_WP_NGINX_HELPER_REDIS_PASSWORD' ) ) {
+			$data['redis_password']                 = RT_WP_NGINX_HELPER_REDIS_PASSWORD;
+			$data['redis_password_set_by_constant'] = 'RT_WP_NGINX_HELPER_REDIS_PASSWORD';
 		}
 
-		if ( defined( 'RT_WP_NGINX_HELPER_REDIS_PASSWORD' ) ) {
-			$data['redis_password']           = RT_WP_NGINX_HELPER_REDIS_PASSWORD;
-			$data['redis_password_set_by_constant'] = 1;
+		if ( defined( 'GP_NGINX_HELPER_REDIS_TIMEOUT' ) ) {
+			$data['redis_timeout']                  = GP_NGINX_HELPER_REDIS_TIMEOUT;
+		}
+
+		if ( defined( 'GP_NGINX_HELPER_REDIS_READ_TIMEOUT' ) ) {
+			$data['redis_read_timeout']             = GP_NGINX_HELPER_REDIS_READ_TIMEOUT;
 		}
 
 		if ( $redis_prefix && $redis_hostname && $redis_port ) {

@@ -196,7 +196,8 @@ if ( is_multisite() ) {
 					echo '<p class="description" style="margin-left:1em;">';
 					esc_html_e(
 					    sprintf(
-					        __("Set by wp-config.php constant: define( 'RT_WP_NGINX_HELPER_CACHE_METHOD',  '%s' );", 'nginx-helper'),
+					        __("Set by wp-config.php constant: define( '%s',  '%s' );", 'nginx-helper'),
+						    $cache_method_set_by_constant,
 					        $cache_method
 					    )
 					);
@@ -244,7 +245,8 @@ if ( is_multisite() ) {
 						echo '<p class="description" style="margin-left:1em;"><strong>';
 						esc_html_e(
 							sprintf(
-								__("Set by wp-config.php constant: define( 'RT_WP_NGINX_HELPER_PURGE_METHOD',  '%s' );", 'nginx-helper'),
+								__("Set by wp-config.php constant: define( '%s',  '%s' );", 'nginx-helper'),
+								$purge_method_set_by_constant,
 								$purge_method
 							)
 						);
@@ -380,14 +382,23 @@ if ( is_multisite() ) {
 								if ( $redis_hostname_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_HOSTNAME', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant: %s", 'nginx-helper'),
+	                                        $redis_hostname_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
-
 								}
 								if ( $redis_unix_socket_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Ignored! - UNIX socket is set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Ignored! - UNIX socket is set by wp-config.php constant: %s", 'nginx-helper'),
+	                                        $redis_unix_socket_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								} else {
@@ -412,14 +423,24 @@ if ( is_multisite() ) {
 								if ( $redis_port_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_PORT', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant: %s", 'nginx-helper'),
+	                                        $redis_port_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
 								if ( $redis_unix_socket_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Ignored! - UNIX socket is set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Ignored! - UNIX socket is set by wp-config.php constant: %s", 'nginx-helper'),
+	                                        $redis_unix_socket_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								} else {
@@ -444,7 +465,12 @@ if ( is_multisite() ) {
 								if ( $redis_unix_socket_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant: %s", 'nginx-helper'),
+	                                        $redis_unix_socket_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
@@ -459,7 +485,12 @@ if ( is_multisite() ) {
 								if ( $redis_prefix_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_PREFIX', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant:  %s", 'nginx-helper'),
+	                                        $redis_prefix_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
@@ -474,7 +505,12 @@ if ( is_multisite() ) {
 								if ( $redis_database_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_DATABASE', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant:  %s", 'nginx-helper'),
+	                                        $redis_database_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
@@ -492,7 +528,12 @@ if ( is_multisite() ) {
 								if ( $redis_username_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_USERNAME', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant:  %s", 'nginx-helper'),
+	                                        $redis_username_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
@@ -510,7 +551,12 @@ if ( is_multisite() ) {
 								if ( $redis_password_set_by_constant ) {
 
 									echo '<p class="description">';
-									esc_html_e( 'Set by wp-config.php constant: RT_WP_NGINX_HELPER_REDIS_PASSWORD', 'nginx-helper' );
+                                    esc_html_e(
+                                        sprintf(
+                                            __("Set by wp-config.php constant:  %s", 'nginx-helper'),
+	                                        $redis_password_set_by_constant
+                                        )
+                                    );
 									echo '</p>';
 
 								}
