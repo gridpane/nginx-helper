@@ -2,75 +2,152 @@
 /**
  * The admin-specific functionality of the plugin.
  *
+ * @link       https://rtcamp.com/nginx-helper/
+ * @since      2.0.0
+ *
  * @package    nginx-helper
+ * @subpackage nginx-helper/admin
  */
 
 /**
- * Description of Predis_Purger
+ * Description of Redis_Purger
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/admin
  * @author     rtCamp
  */
-class Predis_Purger extends Purger {
+class Redis_Purger extends Purger {
 
 	/**
-	 * Predis api object.
+	 * PHP Redis api object.
 	 *
 	 * @since    2.0.0
 	 * @access   public
-	 * @var      string    $redis_object    Predis api object.
+	 * @var      string    $redis_object    PHP Redis api object.
 	 */
 	public $redis_object;
+
+	public $php_redis_client;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    2.0.0
 	 */
-	public function __construct() {
+	public function __construct( $php_redis_client = 'phpredis' ) {
 
 		global $nginx_helper_admin;
 
-		if ( ! class_exists( 'Predis\Autoloader' ) ) {
-			require_once NGINX_HELPER_BASEPATH . 'admin/predis.php';
-		}
+		$this->php_redis_client = $php_redis_client;
 
-		Predis\Autoloader::register();
-
-		/*Composer sets default to version that doesn't allow modern php*/
-		$predis_connection_array = array();
-
-		$path                                =  $nginx_helper_admin->options['redis_unix_socket'];
-		$username                            =  $nginx_helper_admin->options['redis_username'];
-		$password                            =  $nginx_helper_admin->options['redis_password'];
-		$predis_connection_array['database'] = $nginx_helper_admin->options['redis_database'];
-
-		if ( $path ) {
-			$predis_connection_array['path'] = $path;
-		} else {
-			$predis_connection_array['host'] = $nginx_helper_admin->options['redis_hostname'];;
-			$predis_connection_array['port'] = $nginx_helper_admin->options['redis_port'];
-		}
-
-		if ( $username && $password ) {
-			$predis_connection_array['username'] = $username;
-			$predis_connection_array['password'] = $password;
-		}
-
-		// redis server parameter.
-		$this->redis_object = new Predis\Client( $predis_connection_array );
+		$connection_array = [];
+		$path             = $nginx_helper_admin->options['redis_unix_socket'];
+		$username         = $nginx_helper_admin->options['redis_username'];
+		$password         = $nginx_helper_admin->options['redis_password'];
+		$redis_database   = $nginx_helper_admin->options['redis_database'];
 
 		try {
-			$this->redis_object->connect();
+
+			switch ( $php_redis_client ) {
+
+				case 'predis':
+
+					if ( ! class_exists('Predis\Autoloader')) {
+						require_once NGINX_HELPER_BASEPATH . 'admin/predis.php';
+					}
+
+					Predis\Autoloader::register();
+
+					if ($path) {
+						$connection_array['path'] = $path;
+					} else {
+						$connection_array['host'] = $nginx_helper_admin->options['redis_hostname'];;
+						$connection_array['port'] = $nginx_helper_admin->options['redis_port'];
+					}
+
+					if ($username && $password) {
+						$connection_array['username'] = $username;
+						$connection_array['password'] = $password;
+					}
+
+					$connection_array['timeout']            = $nginx_helper_admin->options['redis_timeout'];
+					$connection_array['read_write_timeout'] = $nginx_helper_admin->options['redis_read_timeout'];
+
+					$this->redis_object = new Predis\Client($connection_array);
+
+					$this->redis_object->connect();
+
+					break;
+
+				case 'relay':
+
+					$this->redis_object = new Relay\Relay;
+
+					if ($path) {
+						$host = $path;
+						$port = -1;
+					} else {
+						$host = $nginx_helper_admin->options['redis_hostname'];
+						$port = $nginx_helper_admin->options['redis_port'];
+					}
+
+					$this->redis_object->connect(
+						$host,
+						$port,
+						$nginx_helper_admin->options['redis_timeout'],
+						'',
+						300,
+						$nginx_helper_admin->options['redis_read_timeout']
+					);
+
+					if ($username && $password) {
+						$this->redis_object->auth([$username, $password]);
+					}
+
+					$this->redis_object->select($redis_database);
+
+					break;
+
+				case 'phpredis':
+
+				default:
+
+					$this->redis_object = new Redis();
+
+					if ($path) {
+						$host = $path;
+						$port = -1;
+					} else {
+						$host = $nginx_helper_admin->options['redis_hostname'];
+						$port = $nginx_helper_admin->options['redis_port'];
+					}
+
+					if ($username && $password) {
+						$connection_array['auth'] = [$username, $password];
+					}
+
+					$this->redis_object->connect(
+						$host,
+						$port,
+						$nginx_helper_admin->options['redis_timeout'],
+						'',
+						300,
+						$nginx_helper_admin->options['redis_read_timeout'],
+						$connection_array
+					);
+
+					$this->redis_object->select($redis_database);
+
+					break;
+			}
+
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
 		}
-
 	}
 
 	/**
-	 * Purge all.
+	 * Purge all cache.
 	 */
 	public function purge_all() {
 
@@ -83,16 +160,22 @@ class Predis_Purger extends Purger {
 		// If Purge Cache link click from network admin then purge all.
 		if ( is_network_admin() ) {
 
-			$this->delete_keys_by_wildcard( $prefix . '*' );
+			$total_keys_purged = $this->delete_keys_by_wildcard( $prefix . '*' );
 			$this->log( '* Purged Everything! * ' );
 
 		} else { // Else purge only site specific cache.
 
-			$parse         = wp_parse_url( get_home_url() );
-			$parse['path'] = empty( $parse['path'] ) ? '/' : $parse['path'];
-			$this->delete_keys_by_wildcard( $prefix . $parse['scheme'] . 'GET' . $parse['host'] . $parse['path'] . '*' );
+			$parse             = wp_parse_url( get_home_url() );
+			$parse['path']     = empty( $parse['path'] ) ? '/' : $parse['path'];
+			$total_keys_purged = $this->delete_keys_by_wildcard( $prefix . $parse['scheme'] . 'GET' . $parse['host'] . $parse['path'] . '*' );
 			$this->log( '* ' . get_home_url() . ' Purged! * ' );
 
+		}
+
+		if ( $total_keys_purged ) {
+			$this->log( "Total {$total_keys_purged} urls purged." );
+		} else {
+			$this->log( 'No Cache found.' );
 		}
 
 		$this->log( '* * * * *' );
@@ -108,7 +191,7 @@ class Predis_Purger extends Purger {
 	/**
 	 * Purge url.
 	 *
-	 * @param string $url URL.
+	 * @param string $url URL to purge.
 	 * @param bool   $feed Feed or not.
 	 */
 	public function purge_url( $url, $feed = true ) {
@@ -123,8 +206,6 @@ class Predis_Purger extends Purger {
 		 * @param string $url URL to be purged.
 		 */
 		$url = apply_filters( 'rt_nginx_helper_purge_url', $url );
-
-		$this->log( '- Purging URL | ' . $url );
 
 		$parse = wp_parse_url( $url );
 
@@ -172,6 +253,8 @@ class Predis_Purger extends Purger {
 			}
 		}
 
+		$this->log( '* * * * *' );
+
 	}
 
 	/**
@@ -206,10 +289,11 @@ class Predis_Purger extends Purger {
 
 					$purge_url = $_url_purge_base . $purge_url;
 					$status    = $this->delete_single_key( $purge_url );
+
 					if ( $status ) {
 						$this->log( '- Purge URL | ' . $purge_url );
 					} else {
-						$this->log( '- Not Found | ' . $purge_url, 'ERROR' );
+						$this->log( '- Cache Not Found | ' . $purge_url, 'ERROR' );
 					}
 				} else {
 
@@ -219,30 +303,33 @@ class Predis_Purger extends Purger {
 					if ( $status ) {
 						$this->log( '- Purge Wild Card URL | ' . $purge_url . ' | ' . $status . ' url purged' );
 					} else {
-						$this->log( '- Not Found | ' . $purge_url, 'ERROR' );
+						$this->log( '- Cache Not Found | ' . $purge_url, 'ERROR' );
 					}
 				}
 			}
 		}
-
 	}
 
 	/**
 	 * Single Key Delete Example
 	 * e.g. $key can be nginx-cache:httpGETexample.com/
 	 *
-	 * @param string $key Key to delete cache.
+	 * @param string $key Key.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
 	public function delete_single_key( $key ) {
 
 		try {
-			return $this->redis_object->executeRaw( array( 'DEL', $key ) );
+			if ( 'predis' === $this->php_redis_client ) {
+				return $this->redis_object->executeRaw( array( 'DEL', $key ) );
+			} else {
+				return $this->redis_object->del($key);
+			}
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return 187;
 		}
-
 	}
 
 	/**
@@ -255,7 +342,7 @@ class Predis_Purger extends Purger {
 	 *
 	 * Call redis eval and return value from lua script
 	 *
-	 * @param string $pattern Pattern.
+	 * @param string $pattern pattern.
 	 *
 	 * @return mixed
 	 */
@@ -273,9 +360,10 @@ return k
 LUA;
 
 		try {
-			return $this->redis_object->eval( $lua, 1, $pattern );
+			return $this->redis_object->eval( $lua, array( $pattern ), 1 );
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return 187;
 		}
 
 	}
