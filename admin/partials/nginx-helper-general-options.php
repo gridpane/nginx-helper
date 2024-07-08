@@ -382,12 +382,12 @@ if ( is_multisite() ) {
 								if ( $redis_hostname_set_by_constant ) {
 
 									echo '<p class="description">';
-                                    esc_html_e(
-                                        sprintf(
-                                            __("Set by wp-config.php constant: %s", 'nginx-helper'),
-	                                        $redis_hostname_set_by_constant
-                                        )
-                                    );
+									esc_html_e(
+									    sprintf(
+									        __("Set by wp-config.php constant: %s", 'nginx-helper'),
+									        $redis_hostname_set_by_constant
+									    )
+									);
 									echo '</p>';
 								}
 								if ( $redis_unix_socket_set_by_constant ) {
