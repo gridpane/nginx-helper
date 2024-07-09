@@ -106,6 +106,8 @@ class Redis_Purger extends Purger {
 
 					$this->redis_object->select($redis_database);
 
+					$this->redis_object->setOption(\Relay\Relay::OPT_USE_CACHE, false);
+
 					break;
 
 				case 'phpredis':
