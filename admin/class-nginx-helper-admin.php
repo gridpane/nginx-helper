@@ -293,6 +293,7 @@ class Nginx_Helper_Admin {
 			'redis_username_set_by_constant'        => false,
 			'redis_password_socket_set_by_constant' => false,
 			'homepage_purge_post_type_exceptions'   => array(),
+			'post_type_purge_exceptions'            => array(),
 		);
 
 	}
@@ -320,6 +321,10 @@ class Nginx_Helper_Admin {
 
 		if ( defined( 'GP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS' ) ) {
 			$data['homepage_purge_post_type_exceptions'] = GP_NGINX_HELPER_HOMEPAGE_PURGE_EXCEPTIONS;
+		}
+
+		if ( defined( 'GP_NGINX_HELPER_POST_TYPE_PURGE_EXCEPTIONS' ) ) {
+			$data['post_type_purge_exceptions'] = GP_NGINX_HELPER_POST_TYPE_PURGE_EXCEPTIONS;
 		}
 
 		if ( defined( 'GP_NGINX_HELPER_PURGE_METHOD' ) ) {
@@ -719,19 +724,18 @@ class Nginx_Helper_Admin {
 	 */
 	public function set_future_post_option_on_future_status( $new_status, $old_status, $post ) {
 
-		global $blog_id, $nginx_purger;
+		global $blog_id, $nginx_purger, $nginx_helper_admin;
 
-		$exclude_post_types = apply_filters( 'rt_nginx_helper_exclude_post_types', array( 'nav_menu_item' ) );
-
-		$post_type = $post->post_type;
+		$purge_exceptions   = $nginx_helper_admin->options['post_type_purge_exceptions'];
+		$purge_exceptions[] = 'nav_menu_item';
+		$exclude_post_types = apply_filters( 'rt_nginx_helper_exclude_post_types', $purge_exceptions );
+		$post_type          = $post->post_type;
 
 		if ( in_array( $post_type, $exclude_post_types, true ) ) {
-		    if ( 'nav_menu_item' !== $post_type ) {
-			    $nginx_purger->log('* * * * *');
-			    $nginx_purger->log('* Post Type update - ' . $post_type . ' - purge trigger excluded...');
-			    $nginx_purger->log('* Filter:  -> rt_nginx_helper_exclude_post_types');
-			    $nginx_purger->log('* * * * *');
-		    }
+            $nginx_purger->log('* * * * *');
+            $nginx_purger->log('* Post Type update - ' . $post_type . ' - purge trigger excluded...');
+            $nginx_purger->log('* Filter:  -> rt_nginx_helper_exclude_post_types');
+            $nginx_purger->log('* * * * *');
 			return;
 		}
 
