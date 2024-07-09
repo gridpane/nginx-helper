@@ -27,18 +27,18 @@ class Redis_Purger extends Purger {
 	 */
 	public $redis_object;
 
-	public $php_redis_client;
+	public $redis_client;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    2.0.0
 	 */
-	public function __construct( $php_redis_client = 'phpredis' ) {
+	public function __construct( $redis_client = 'phpredis' ) {
 
 		global $nginx_helper_admin;
 
-		$this->php_redis_client = $php_redis_client;
+		$this->redis_client = $redis_client;
 
 		$connection_array = [];
 		$path             = $nginx_helper_admin->options['redis_unix_socket'];
@@ -48,7 +48,7 @@ class Redis_Purger extends Purger {
 
 		try {
 
-			switch ( $php_redis_client ) {
+			switch ( $redis_client ) {
 
 				case 'predis':
 
@@ -320,8 +320,10 @@ class Redis_Purger extends Purger {
 	 */
 	public function delete_single_key( $key ) {
 
+		$this->log( '- Redis Client: ' . $this->redis_client );
+
 		try {
-			if ( 'predis' === $this->php_redis_client ) {
+			if ( 'predis' === $this->redis_client ) {
 				return $this->redis_object->executeRaw( array( 'DEL', $key ) );
 			} else {
 				return $this->redis_object->del($key);
@@ -347,6 +349,8 @@ class Redis_Purger extends Purger {
 	 * @return mixed
 	 */
 	public function delete_keys_by_wildcard( $pattern ) {
+
+		$this->log( '- Redis Client: ' . $this->redis_client );
 
 		// Lua Script.
 		$lua = <<<LUA

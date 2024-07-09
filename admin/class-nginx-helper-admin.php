@@ -273,6 +273,7 @@ class Nginx_Helper_Admin {
 			'purge_page_on_new_comment'             => 1,
 			'purge_page_on_deleted_comment'         => 1,
 			'purge_feeds'                           => 1,
+            'relay_client'                          => 0,
 			'redis_hostname'                        => '127.0.0.1',
 			'redis_port'                            => '6379',
 			'redis_prefix'                          => 'nginx-cache:',
@@ -357,6 +358,10 @@ class Nginx_Helper_Admin {
 		$redis_hostname                            = false;
 		$redis_port                                = false;
 		$redis_unix_socket                         = false;
+
+		if ( defined( 'GP_NGINX_HELPER_USE_RELAY' && in_array('relay', get_loaded_extensions(), true) ) ) {
+			$data['redis_client'] = 1;
+		}
 
 		if ( defined( 'GP_NGINX_HELPER_REDIS_PREFIX' ) ) {
 			$redis_prefix                         = GP_NGINX_HELPER_REDIS_PREFIX;
