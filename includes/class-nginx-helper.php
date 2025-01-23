@@ -5,8 +5,8 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
+ * @link       https://github.com/gridpane/nginx-helper/
+ * @since      9.9.10
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/includes
@@ -21,10 +21,10 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
- * @since      2.0.0
+ * @since      9.9.10
  * @package    nginx-helper
  * @subpackage nginx-helper/includes
- * @author     rtCamp
+ * @author     GridPane
  */
 class Nginx_Helper {
 
@@ -32,7 +32,7 @@ class Nginx_Helper {
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   protected
 	 * @var      Nginx_Helper_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
@@ -41,7 +41,7 @@ class Nginx_Helper {
 	/**
 	 * The unique identifier of this plugin.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   protected
 	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
@@ -50,7 +50,7 @@ class Nginx_Helper {
 	/**
 	 * The current version of the plugin.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   protected
 	 * @var      string    $version    The current version of the plugin.
 	 */
@@ -59,7 +59,7 @@ class Nginx_Helper {
 	/**
 	 * Minimum WordPress Version Required.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   public
 	 * @var      string    $minium_wp
 	 */
@@ -72,12 +72,12 @@ class Nginx_Helper {
 	 * Load the dependencies, define the locale, and set the hooks for the admin area and
 	 * the public-facing side of the site.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function __construct() {
 
 		$this->plugin_name = 'nginx-helper';
-		$this->version     = '2.2.5';
+		$this->version     = '9.9.10';
 		$this->minimum_wp  = '3.0';
 
 		if ( ! $this->required_wp_version() ) {
@@ -105,7 +105,7 @@ class Nginx_Helper {
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   private
 	 */
 	private function load_dependencies() {
@@ -146,7 +146,7 @@ class Nginx_Helper {
 	 * Uses the Nginx_Helper_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   private
 	 */
 	private function set_locale() {
@@ -161,7 +161,7 @@ class Nginx_Helper {
 	/**
 	 * Register all of the hooks related to the admin area functionality of the plugin.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
@@ -169,7 +169,7 @@ class Nginx_Helper {
 		global $nginx_helper_admin, $nginx_purger;
 
 		$nginx_helper_admin = new Nginx_Helper_Admin( $this->get_plugin_name(), $this->get_version() );
-
+		$this->loader->add_action( 'init', $nginx_helper_admin, 'initialize_setting_tab' );
 		// Defines global variables.
 		if ( ! empty( $nginx_helper_admin->options['cache_method'] ) && 'enable_redis' === $nginx_helper_admin->options['cache_method'] ) {
 
@@ -206,8 +206,6 @@ class Nginx_Helper {
 			$this->loader->add_action( 'admin_bar_menu', $nginx_helper_admin, 'nginx_helper_toolbar_purge_link', 100 );
 		}
 
-		$this->loader->add_action( 'wp_ajax_rt_get_feeds', $nginx_helper_admin, 'nginx_helper_get_feeds' );
-
 		$this->loader->add_action( 'shutdown', $nginx_helper_admin, 'add_timestamps', 99999 );
 		$this->loader->add_action( 'add_init', $nginx_helper_admin, 'update_map' );
 
@@ -227,12 +225,15 @@ class Nginx_Helper {
 
 		// expose action to allow other plugins to purge the cache.
 		$this->loader->add_action( 'rt_nginx_helper_purge_all', $nginx_purger, 'purge_all' );
+		
+		// add action to preload the cache
+		$this->loader->add_action( 'admin_init', $nginx_helper_admin, 'preload_cache' );
 	}
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function run() {
 		$this->loader->run();
@@ -242,7 +243,7 @@ class Nginx_Helper {
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     2.0.0
+	 * @since     9.9.10
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
@@ -252,7 +253,7 @@ class Nginx_Helper {
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
-	 * @since     2.0.0
+	 * @since     9.9.10
 	 *
 	 * @return Nginx_Helper_Loader Orchestrates the hooks of the plugin.
 	 */
@@ -263,7 +264,7 @@ class Nginx_Helper {
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     2.0.0
+	 * @since     9.9.10
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_version() {
@@ -273,7 +274,7 @@ class Nginx_Helper {
 	/**
 	 * Check wp version.
 	 *
-	 * @since     2.0.0
+	 * @since     9.9.10
 	 *
 	 * @global string $wp_version
 	 *

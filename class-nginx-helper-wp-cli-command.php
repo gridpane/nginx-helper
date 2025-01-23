@@ -2,7 +2,7 @@
 /**
  * Contains class for WP-CLI command.
  *
- * @since      2.0.0
+ * @since      9.9.10
  * @package    nginx-helper
  */
 

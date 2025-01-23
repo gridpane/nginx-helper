@@ -10,14 +10,14 @@
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/admin
- * @author     rtCamp
+ * @author     GridPane
  */
 class Predis_Purger extends Purger {
 
 	/**
 	 * Predis api object.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   public
 	 * @var      string    $redis_object    Predis api object.
 	 */
@@ -26,7 +26,7 @@ class Predis_Purger extends Purger {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function __construct() {
 
@@ -44,7 +44,7 @@ class Predis_Purger extends Purger {
 		$path                                =  $nginx_helper_admin->options['redis_unix_socket'];
 		$username                            =  $nginx_helper_admin->options['redis_username'];
 		$password                            =  $nginx_helper_admin->options['redis_password'];
-		$predis_connection_array['database'] = $nginx_helper_admin->options['redis_database'];
+		$predis_connection_array['database'] =  $nginx_helper_admin->options['redis_database'];
 
 		if ( $path ) {
 			$predis_connection_array['path'] = $path;
@@ -63,8 +63,13 @@ class Predis_Purger extends Purger {
 
 		try {
 			$this->redis_object->connect();
+			
+			if( 0 !== $nginx_helper_admin->options['redis_database'] ) {
+				$this->redis_object->select( $nginx_helper_admin->options['redis_database'] );
+			}
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return;
 		}
 
 	}
@@ -100,7 +105,7 @@ class Predis_Purger extends Purger {
 		/**
 		 * Fire an action after the Redis cache has been purged.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 */
 		do_action( 'rt_nginx_helper_after_redis_purge_all' );
 	}
@@ -118,7 +123,7 @@ class Predis_Purger extends Purger {
 		/**
 		 * Filters the URL to be purged.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 *
 		 * @param string $url URL to be purged.
 		 */
@@ -150,7 +155,7 @@ class Predis_Purger extends Purger {
 		 *
 		 * Regardless of what key / suffix is being to store `$device_type` cache , it will be deleted.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 */
 		if ( strpos( $_url_purge_base, '*' ) === false ) {
 

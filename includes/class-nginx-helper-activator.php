@@ -4,13 +4,13 @@
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
- * @since      2.0.0
- * @link       https://rtcamp.com/nginx-helper/
+ * @since      9.9.10
+ * @link       https://github.com/gridpane/nginx-helper/
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/includes
  *
- * @author     rtCamp
+ * @author     GridPane
  */
 
 /**
@@ -22,7 +22,7 @@ class Nginx_Helper_Activator {
 	 * Create log directory. Add capability of nginx helper.
 	 * Schedule event to check log file size daily.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @global Nginx_Helper_Admin $nginx_helper_admin
 	 */
@@ -57,6 +57,10 @@ class Nginx_Helper_Activator {
 		$role->add_cap( 'Nginx Helper | Purge cache' );
 
 		wp_schedule_event( time(), 'daily', 'rt_wp_nginx_helper_check_log_file_size_daily' );
+		
+		if( method_exists( $nginx_helper_admin, 'store_default_options' ) ) {
+			$nginx_helper_admin->store_default_options();
+		}
 
 	}
 

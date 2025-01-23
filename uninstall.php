@@ -18,8 +18,8 @@
  * For more information, see the following discussion:
  * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
+ * @link       https://gridpane.com
+ * @since      9.9.10
  *
  * @package    nginx-helper
  */
