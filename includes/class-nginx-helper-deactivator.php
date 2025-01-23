@@ -10,20 +10,20 @@
  *
  * This class defines all code necessary to run during the plugin's deactivation.
  *
- * @since      2.0.0
- * @link       https://rtcamp.com/nginx-helper/
+ * @since      9.9.10
+ * @link       https://github.com/gridpane/nginx-helper/
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/includes
  *
- * @author     rtCamp
+ * @author     GridPane
  */
 class Nginx_Helper_Deactivator {
 
 	/**
 	 * Schedule event to check log file size daily. Remove nginx helper capability.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public static function deactivate() {
 

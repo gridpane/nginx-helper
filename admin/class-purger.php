@@ -12,7 +12,7 @@
  *
  * @subpackage nginx-helper/admin
  *
- * @author     rtCamp
+ * @author     GridPane
  */
 abstract class Purger {
 
@@ -430,8 +430,7 @@ abstract class Purger {
 		/**
 		 * Filters the cached file name.
 		 *
-		 * @since 2.1.0
-		 * @since 2.2.3 Purge URL argument `$url` were added.
+		 * @since 9.9.10
 		 *
 		 * @param string $cached_file Cached file name.
 		 * @param string $url         URL to be purged.
@@ -453,7 +452,7 @@ abstract class Purger {
 			/**
 			 * Fire an action after deleting file from cache.
 			 *
-			 * @since 2.1.0
+			 * @since 9.9.10
 			 *
 			 * @param string $url         URL to be purged.
 			 * @param string $cached_file Cached file name.
@@ -474,7 +473,7 @@ abstract class Purger {
 		/**
 		 * Filters the URL to be purged.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 *
 		 * @param string $url URL to be purged.
 		 */
@@ -483,7 +482,7 @@ abstract class Purger {
 		/**
 		 * Fire an action before purging URL.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 *
 		 * @param string $url URL to be purged.
 		 */
@@ -517,7 +516,7 @@ abstract class Purger {
 			/**
 			 * Fire an action after remote purge request.
 			 *
-			 * @since 2.1.0
+			 * @since 9.9.10
 			 *
 			 * @param string $url      URL to be purged.
 			 * @param array  $response Array of results including HTTP headers.

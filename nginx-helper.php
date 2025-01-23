@@ -1,18 +1,18 @@
 <?php
 /**
- * Plugin Name:       Nginx Helper
- * Plugin URI:        https://gridpane.com
+ * Plugin Name:       GridPane Nginx Helper
+ * Plugin URI:        https://github.com/gridpane/nginx-helper/
  * Description:       Cleans nginx's fastcgi/proxy cache or redis-cache whenever a post is edited/published. Also does few more things.
- * Version:           9.9.9
+ * Version:           9.9.10
  * Author:            GridPane Jeff
  * Author URI:        https://gridpane.com
  * Text Domain:       nginx-helper
  * Domain Path:       /languages
  * Requires at least: 3.0
- * Tested up to:      6.4
+ * Tested up to:      6.7
  *
- * @link              https://gridpane.com
- * @since             2.0.0
+ * @link              https://github.com/gridpane/nginx-helper/
+ * @since             9.9.10
  * @package           nginx-helper
  */
 
@@ -76,7 +76,7 @@ require NGINX_HELPER_BASEPATH . 'includes/class-nginx-helper.php';
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    2.0.0
+ * @since    9.9.10
  */
 function run_nginx_helper() {
 

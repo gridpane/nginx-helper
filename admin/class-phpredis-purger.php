@@ -2,8 +2,8 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
+ * @link       https://github.com/gridpane/nginx-helper/
+ * @since      9.9.10
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/admin
@@ -14,14 +14,14 @@
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/admin
- * @author     rtCamp
+ * @author     GridPane
  */
 class PhpRedis_Purger extends Purger {
 
 	/**
 	 * PHP Redis api object.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 * @access   public
 	 * @var      string    $redis_object    PHP Redis api object.
 	 */
@@ -30,7 +30,7 @@ class PhpRedis_Purger extends Purger {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function __construct() {
 
@@ -71,8 +71,10 @@ class PhpRedis_Purger extends Purger {
 			);
 
 			$redis_database = $nginx_helper_admin->options['redis_database'];
-
-			$this->redis_object->select($redis_database);
+			
+			if( 0 !== $redis_database ) {
+				$this->redis_object->select($redis_database);
+			}
 
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
@@ -117,7 +119,7 @@ class PhpRedis_Purger extends Purger {
 		/**
 		 * Fire an action after the Redis cache has been purged.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 */
 		do_action( 'rt_nginx_helper_after_redis_purge_all' );
 	}
@@ -135,7 +137,7 @@ class PhpRedis_Purger extends Purger {
 		/**
 		 * Filters the URL to be purged.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 *
 		 * @param string $url URL to be purged.
 		 */
@@ -165,7 +167,7 @@ class PhpRedis_Purger extends Purger {
 		 *
 		 * Regardless of what key / suffix is being to store `$device_type` cache , it will be deleted.
 		 *
-		 * @since 2.1.0
+		 * @since 9.9.10
 		 */
 		if ( strpos( $_url_purge_base, '*' ) === false ) {
 

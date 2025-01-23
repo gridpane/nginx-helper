@@ -2,8 +2,8 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
+ * @link       https://github.com/gridpane/nginx-helper/
+ * @since      9.9.10
  *
  * @package    nginx-helper
  * @subpackage nginx-helper/includes
@@ -20,14 +20,14 @@
  *
  * @subpackage nginx-helper/includes
  *
- * @author     rtCamp
+ * @author     GridPane
  */
 class Nginx_Helper_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @access   protected
 	 *
@@ -38,7 +38,7 @@ class Nginx_Helper_Loader {
 	/**
 	 * The array of filters registered with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @access   protected
 	 *
@@ -49,7 +49,7 @@ class Nginx_Helper_Loader {
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function __construct() {
 
@@ -61,7 +61,7 @@ class Nginx_Helper_Loader {
 	/**
 	 * Add a new action to the collection to be registered with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @param      string $hook The name of the WordPress action that is being registered.
 	 * @param      object $component A reference to the instance of the object on which the action is defined.
@@ -76,7 +76,7 @@ class Nginx_Helper_Loader {
 	/**
 	 * Add a new filter to the collection to be registered with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @param      string $hook The name of the WordPress filter that is being registered.
 	 * @param      object $component A reference to the instance of the object on which the filter is defined.
@@ -92,7 +92,7 @@ class Nginx_Helper_Loader {
 	 * A utility function that is used to register the actions and hooks into a single
 	 * collection.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 *
 	 * @access   private
 	 *
@@ -122,7 +122,7 @@ class Nginx_Helper_Loader {
 	/**
 	 * Register the filters and actions with WordPress.
 	 *
-	 * @since    2.0.0
+	 * @since    9.9.10
 	 */
 	public function run() {
 

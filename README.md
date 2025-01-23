@@ -1,21 +1,20 @@
 # Nginx Helper #
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-**Contributors:** rtcamp, rahul286, saurabhshukla, manishsongirkar36, faishal, desaiuditd, darren-slatten, jk3us, daankortenbach, telofy, pjv, llonchj, jinnko, weskoop, bcole808, gungeekatx, rohanveer, chandrapatel, gagan0123, ravanh, michaelbeil, samedwards, niwreg, entr, nuvoPoint, iam404, rittesh.patel, vishalkakadiya, BhargavBhandari90, vincent-lu, murrayjbrown, bryant1410, 1gor, matt-h, pySilver, johan-chassaing, dotsam, sanketio, petenelson, nathanielks, rigagoogoo, dslatten, jinschoi, kelin1003, vaishuagola27, rahulsprajapati, Joel-James, utkarshpatel, gsayed786, shashwatmittal, sudhiryadav, thrijith, stayallive, jaredwsmith, abhijitrakas, umeshnevase, sid177, souptik, arafatkn, subscriptiongroup, akrocks,  gnif, jeffcleverley(GridPane)
+**Contributors:** jeffcleverley(GridPane), rtcamp, rahul286, saurabhshukla, manishsongirkar36, faishal, desaiuditd, darren-slatten, jk3us, daankortenbach, telofy, pjv, llonchj, jinnko, weskoop, bcole808, gungeekatx, rohanveer, chandrapatel, gagan0123, ravanh, michaelbeil, samedwards, niwreg, entr, nuvoPoint, iam404, rittesh.patel, vishalkakadiya, BhargavBhandari90, vincent-lu, murrayjbrown, bryant1410, 1gor, matt-h, pySilver, johan-chassaing, dotsam, sanketio, petenelson, nathanielks, rigagoogoo, dslatten, jinschoi, kelin1003, vaishuagola27, rahulsprajapati, Joel-James, utkarshpatel, gsayed786, shashwatmittal, sudhiryadav, thrijith, stayallive, jaredwsmith, abhijitrakas, umeshnevase, sid177, souptik, arafatkn, subscriptiongroup, akrocks,  gnif, jeffcleverley(GridPane)
 
-**Tags:** nginx, cache, purge, nginx map, nginx cache, maps, fastcgi, proxy, redis, redis-cache, rewrite, permalinks
+**Tags:** nginx, cache-purge, fastcgi, permalinks, redis-cache
 
 **Requires at least:** 3.0
 
-**Tested up to:** 6.1
+**Tested up to:** 6.7
 
-**Stable tag:** 2.2.5
+**Stable tag:** 9.9.10
 
 **License:** GPLv2 or later (of-course)
 
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
 
-**Donate Link:** http://rt.cx/eedonate
 
 Cleans nginx's fastcgi/proxy cache or redis-cache whenever a post is edited/published. Also does a few more things.
 
@@ -26,15 +25,6 @@ Cleans nginx's fastcgi/proxy cache or redis-cache whenever a post is edited/publ
 1. Adds support for nginx fastcgi_cache_purge & proxy_cache_purge directive from [module](https://github.com/FRiCKLE/ngx_cache_purge "ngx_cache_purge module"). Provides settings so you can customize purging rules.
 1. Adds support for nginx `map{..}` on a WordPress-multisite network installation. Using it, Nginx can serve PHP file uploads even if PHP/MySQL crashes. Please check the tutorial list below for related Nginx configurations.
 
-### Tutorials ###
-
-You will need to follow one or more tutorials below to get desired functionality:
-
-* [Nginx Map + WordPress-Multisite + Static Files Handling](https://easyengine.io/wordpress-nginx/tutorials/multisite/static-files-handling/)
-* [Nginx + WordPress + fastcgi_purge_cache](https://easyengine.io/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/)
-* [Nginx + WordPress-Multisite (Subdirectories) + fastcgi_purge_cache](https://easyengine.io/wordpress-nginx/tutorials/multisite/subdirectories/fastcgi-cache-with-purging/)
-* [Nginx + WordPress-Multisite (Subdomains/domain-mapping) + fastcgi_purge_cache](https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/fastcgi-cache-with-purging/)
-* [Other WordPress-Nginx Tutorials](https://easyengine.io/wordpress-nginx/tutorials/)
 
 ## Installation ##
 
@@ -49,17 +39,13 @@ Manual Installation
 1. Upload them to `/wp-content/plugins/` directory on your WordPress installation.
 1. Then activate the Plugin from Plugins page.
 
-For proper configuration, check out our **tutorial list** in the [Description tab](http://wordpress.org/extend/plugins/nginx-helper).
-
 ## Frequently Asked Questions ##
-
-**Important** - Please refer to [https://github.com/rtcamp/nginx-helper#frequently-asked-questions](https://github.com/rtcamp/nginx-helper#frequently-asked-questions) for up-to-date FAQs.
 
 ### FAQ - Installation/Comptability ###
 
 **Q. Will this work out of the box?**
 
-No. You need to make some changes at the Nginx end. Please check our [tutorial list](https://easyengine.io/wordpress-nginx/tutorials/).
+No. You need to make some changes at the Nginx end.
 
 **Q. Can I set the cache type using wp-config.php constants**
 
@@ -187,6 +173,18 @@ define( 'RT_WP_NGINX_HELPER_REDIS_USERNAME', 'user' );
 define( 'RT_WP_NGINX_HELPER_REDIS_PASSWORD', 'password' );
 ```
 
+**Q. Can I override the redis socket path, username, password?**
+
+Yes, you can force override the redis socket path, username, password by defining constant in wp-config.php. For example:
+
+```php
+define( 'RT_WP_NGINX_HELPER_REDIS_UNIX_SOCKET', '/var/run/redis/redis.sock' );
+
+define( 'RT_WP_NGINX_HELPER_REDIS_USERNAME', 'admin' );
+
+define( 'RT_WP_NGINX_HELPER_REDIS_PASSWORD', 'admin' );
+```
+
 ### FAQ - Nginx Map ###
 
 **Q. My multisite already uses `WPMU_ACCEL_REDIRECT`. Do I still need Nginx Map?**
@@ -197,398 +195,44 @@ Definitely. `WPMU_ACCEL_REDIRECT` reduces the load on PHP, but it still ask Word
 
 Most likely yes. A wordpress plugin, if not using explicitly any Apache-only mod, should work on Nginx. Some plugin may need some extra work.
 
+
+### FAQ - WP-CLI ###
+
+**Q. How can I update the options using WP-CLI?**
+
+```shell
+wp option patch update rt_wp_nginx_helper_options <option_name> <option_value>
+```
+
+
 ### Still need help! ###
 
-Please post your problem in [our free support forum](https://github.com/rtCamp/nginx-helper/issues).
+Please post your problem in the github issues.
 
 ## Screenshots ##
 
 ### 1. Nginx plugin settings ###
 
-![Nginx plugin settings](https://ps.w.org/nginx-helper/assets/screenshot-1.png)
-
 ### 2. Remaining settings ###
-
-![Remaining settings](https://ps.w.org/nginx-helper/assets/screenshot-2.png)
 
 ## Changelog ##
 
-### 2.2.6 ###
+### 9.9.10 ###
 
-* Added Fastcgi purge all capability using GET requests IF Torden ngx_cache_purge module is available. [#323](https://github.com/rtCamp/nginx-helper/issues/323) - by [Geoffrey McRae - gnif](https://github.com/gnif) and [GridPane - Jeff Cleverley](https://github.com/gridpane)
-* Added Redis Unix Socket connections. [325](https://github.com/rtCamp/nginx-helper/issues/325) - by [GridPane - Jeff Cleverley](https://github.com/gridpane)
-* Added Redis DB selection. [343](https://github.com/rtCamp/nginx-helper/issues/343) - by [GridPane - Jeff Cleverley](https://github.com/gridpane)
-* Added Redis ACL. [343](https://github.com/rtCamp/nginx-helper/issues/343) - by [GridPane - Jeff Cleverley](https://github.com/gridpane)
-* Added Management of all FastCGI and Redis Connection Parameters by wp-config.php constants. [343](https://github.com/rtCamp/nginx-helper/issues/343) - by [GridPane - Jeff Cleverley](https://github.com/gridpane)
+Pulled in rtCamp fixes from their version - 2.3.0 and 2.3.1
 
-### 2.2.5 ###
+* Update the contributors list and tags for the plugin. [#378](https://github.com/rtCamp/nginx-helper/issues/378) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
+* Disable the purge functionality when importing data. [#52](https://github.com/rtCamp/nginx-helper/pull/52) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
+* Added option to preload cache for all Post and Pages. [#47](https://github.com/rtCamp/nginx-helper/pull/47) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
+* Added the capability to purge Amp URL's. [#135](https://github.com/rtCamp/nginx-helper/pull/135) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
+* Add capability to allow modifying options using WP-CLI. [#307](https://github.com/rtCamp/nginx-helper/pull/307) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
+* Fix the plugin crash issue due to internationalization after upgrading to WordPress Version 6.7. [#364](https://github.com/rtCamp/nginx-helper/pull/364) - by [Vedant Gandhi](https://github.com/Vedant-Gandhi)
 
-* Add the capability to enable/disable purging of feeds. [#281](https://github.com/rtCamp/nginx-helper/issues/281) - by [Amaan Khan](https://github.com/pathan-amaankhan)
-* Fix undefined port error when Redis port is set to empty string. [#333](https://github.com/rtCamp/nginx-helper/issues/333) - by [Amaan Khan](https://github.com/pathan-amaankhan)
 
-### 2.2.4 ###
+### 9.9.9 ###
 
-* Introduces the capability to specify the `NGINX_HELPER_LOG` constant, allowing users to activate the logging feature. [#318](https://github.com/rtCamp/nginx-helper/pull/318) - by [Vishal Kakadiya](https://github.com/vishalkakadiya)
-* Existing users employing the nginx-helper plugin with logging enabled will experience no disruptions. However, if logging is disabled, users must define the `NGINX_HELPER_LOG` constant to re-enable the logging feature.
-
-### 2.2.3 ###
-
-* Add the URL being purged as parameter in `rt_nginx_helper_purge_cached_file` hook. [#271](https://github.com/rtCamp/nginx-helper/pull/271) - by [Arafat Islam](https://github.com/arafatkn)
-* Fix performance issue when saving nav menus. [#112](https://github.com/rtCamp/nginx-helper/issues/112), [#272](https://github.com/rtCamp/nginx-helper/pull/272/) - by [Arafat Islam](https://github.com/arafatkn)
-* Fix purging date archives for custom post types. [#40](https://github.com/rtCamp/nginx-helper/issues/40), [#268](https://github.com/rtCamp/nginx-helper/pull/268) - by [Arafat Islam](https://github.com/arafatkn)
-* Fix pages and CPT URLs not being purged on moving to trash. [#191](https://github.com/rtCamp/nginx-helper/issues/191), [#267](https://github.com/rtCamp/nginx-helper/pull/267) - by [Arafat Islam](https://github.com/arafatkn)
-* Fix notice - Undefined index: path [#190](https://github.com/rtCamp/nginx-helper/issues/190), [#251](https://github.com/rtCamp/nginx-helper/issues/251), [#262](https://github.com/rtCamp/nginx-helper/pull/262) - by [George Lagonikas](https://github.com/glagonikas)
-* PHP 8.1 compatibility [#291](https://github.com/rtCamp/nginx-helper/issues/291), [#302](https://github.com/rtCamp/nginx-helper/pull/302) - by [Siddharth Tikekar](https://github.com/SID177)
-* Tested with WordPress 6.1 [#285](https://github.com/rtCamp/nginx-helper/pull/285)
-
-### 2.2.2 ###
-
-* Add action `rt_nginx_helper_after_purge_all` to fire after the entire cache has been purged whatever caching type is used. [#232](https://github.com/rtCamp/nginx-helper/pull/232) - by [Julien-prrs](https://github.com/Julien-prrs)
-* Fix issue where settings not saved because the button's value localized (for any language). [#236](https://github.com/rtCamp/nginx-helper/pull/236) - by [umeshnevase](https://github.com/umeshnevase)
-* Fix issue where "Custom Purge URL" option displays previous value. [#240](https://github.com/rtCamp/nginx-helper/issues/240), [#241](https://github.com/rtCamp/nginx-helper/pull/241) - by [KirillGritcenko](https://github.com/KirillGritcenko)
-* Tested with WordPress 5.4
-
-### 2.2.1 ###
-
-* Fix timeout issue on FastCGI cache purge. [#229](https://github.com/rtCamp/nginx-helper/pull/229) - by [chandrapatel](https://github.com/chandrapatel), [thrijith](https://github.com/thrijith)
-
-### 2.2.0 ###
-
-* Add filter `rt_nginx_helper_fastcgi_purge_suffix` to change purge suffix for FastCGI cache. [#141](https://github.com/rtCamp/nginx-helper/pull/141) - by [stayallive](https://github.com/stayallive)
-* Add filter `rt_nginx_helper_fastcgi_purge_url_base` to change purge URL base for FastCGI cache. [#141](https://github.com/rtCamp/nginx-helper/pull/141) - by [stayallive](https://github.com/stayallive)
-* Update our code to be in line with WordPress Coding standards in various places. [#209](https://github.com/rtCamp/nginx-helper/pull/209), [#225](https://github.com/rtCamp/nginx-helper/pull/225) - by [abhijitrakas](https://github.com/abhijitrakas), [chandrapatel](https://github.com/chandrapatel)
-* Check and verify purging is enabled before purging cache. [#168](https://github.com/rtCamp/nginx-helper/pull/168) - by [jaredwsmith](https://github.com/jaredwsmith)
-* Hide Purge Cache button in admin bar when purge is disabled. [#218](https://github.com/rtCamp/nginx-helper/issues/218), [#219](https://github.com/rtCamp/nginx-helper/pull/219) - by [mbautista](https://github.com/mbautista), [chandrapatel](https://github.com/chandrapatel)
-* Don't add Nginx Timestamp on WordPress login page. [#204](https://github.com/rtCamp/nginx-helper/issues/204), [#220](https://github.com/rtCamp/nginx-helper/pull/220) - by [peixotorms](https://github.com/peixotorms), [chandrapatel](https://github.com/chandrapatel)
-
-### 2.1.0 ###
-
-* Add wildcard cache key deletion for device type cache purge. [#203](https://github.com/rtCamp/nginx-helper/pull/203) - by [pradeep910](https://github.com/pradeep910)
-* Add filter `rt_nginx_helper_purge_url` to filter the URL to be purged. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add filter `rt_nginx_helper_purge_cached_file` to filter the cached file name. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add filter `rt_nginx_helper_remote_purge_url` to filter remote URL to be purged. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add action `rt_nginx_helper_after_fastcgi_purge_all` to fire after the FastCGI cache has been purged. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add action `rt_nginx_helper_after_redis_purge_all` to fire after the Redis cache has been purged. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add action `rt_nginx_helper_purged_file` to fire an action after deleting file from cache. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add action `rt_nginx_helper_before_remote_purge_url` to fire an action before purging remote URL. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Add action `rt_nginx_helper_after_remote_purge_url` to fire an action after remote purge request. [#182](https://github.com/rtCamp/nginx-helper/pull/182) - by [todeveni](https://github.com/todeveni)
-* Fix issue with post purge on new comments. [#175](https://github.com/rtCamp/nginx-helper/pull/175) - by [jinschoi](https://github.com/jinschoi)
-* Fix Nginx Timestamp being added to invalid content type. [#200](https://github.com/rtCamp/nginx-helper/pull/200) - by [thrijith](https://github.com/thrijith)
-* Handle filesize exception while truncating nginx.log file. [#206](https://github.com/rtCamp/nginx-helper/pull/206) - by [peterjanes](https://github.com/peterjanes)
-
-### 2.0.3 ###
-
-* Update article link for fastcgi cache purge. [#187](https://github.com/rtCamp/nginx-helper/pull/187) - by [gagan0123](https://github.com/gagan0123)
-* Fix map generation issue on `SUBDOMAIN_INSTALL`. [#189](https://github.com/rtCamp/nginx-helper/pull/189) - by [ChrisHardie](https://github.com/ChrisHardie)
-* Add GitHub Action for plugin release. [#194](https://github.com/rtCamp/nginx-helper/pull/194) - by [sudhir-yadav](https://github.com/sudhir-yadav)
-
-### 2.0.2 ###
-
-* Fix undefined error when we install the plugin for the first time and if Redis is not available. [#162](https://github.com/rtCamp/nginx-helper/pull/162) - by [Joel-James](https://github.com/Joel-James)
-* Remove extra spacing for nginx map section. [#169](https://github.com/rtCamp/nginx-helper/pull/169) - by [ShashwatMittal](https://github.com/ShashwatMittal)
-* Purge Cache menu in front-end admibar now purge current page. [#173](https://github.com/rtCamp/nginx-helper/pull/173) - by [imranhsayed](https://github.com/imranhsayed)
-* Fix issue where cache is not cleared when page is swiched from publish to draft. [#174](https://github.com/rtCamp/nginx-helper/pull/174) - by [imranhsayed](https://github.com/imranhsayed)
-* Fix an issue where custom purge url option does not show newlines when using multiple urls. [#184](https://github.com/rtCamp/nginx-helper/issues/184) - by [mist-webit](https://github.com/mist-webit)
-
-### 2.0.1 ###
-
-* Fix settings url for multisite: use network_admin_url to get network correct settings url. [#163](https://github.com/rtCamp/nginx-helper/pull/163) - by [Joel-James](https://github.com/Joel-James)
-* Fix php error with arbitrary statement in empty - Prior to PHP 5.5. [#165](https://github.com/rtCamp/nginx-helper/pull/165) - by [PatelUtkarsh](https://github.com/PatelUtkarsh)
-
-### 2.0.0 ###
-
-* Fix typo causing failure to purge on trashed comment. [#159](https://github.com/rtCamp/nginx-helper/pull/159) - by [jinschoi](https://github.com/jinschoi)
-* Refactor Plugin structure and remove unused code. Initial code by [chandrapatel](https://github.com/chandrapatel), [#153](https://github.com/rtCamp/nginx-helper/pull/153) - by [kelin1003](https://github.com/kelin1003),
-* Run phpcs and fix warning. [#158](https://github.com/rtCamp/nginx-helper/pull/158) by [vaishaliagola27](https://github.com/vaishaliagola27)
-* Make compatible with EasyEngine v4.
-
-### 1.9.12 ###
-
-* Allow override Redis host/port/prefix by defining constant in wp-config.php [#152](https://github.com/rtCamp/nginx-helper/pull/152) - by [vincent-lu](https://github.com/vincent-lu)
-
-### 1.9.11 ###
-
-* Fixed issue where permalinks without trailing slash does not purging [#124](https://github.com/rtCamp/nginx-helper/issues/124) - by Patrick
-* Check whether role exist or not before removing capability. [#134](https://github.com/rtCamp/nginx-helper/pull/134) - by [1gor](https://github.com/1gor)
-
-### 1.9.10 ###
-
-* Fixed issue where Nginx cache folders deleted on purge. [#123](https://github.com/rtCamp/nginx-helper/pull/123) - by [johan-chassaing](https://github.com/johan-chassaing)
-* Fixed Redis purge all feature for installation where WordPress lives in a separate folder. [#130](https://github.com/rtCamp/nginx-helper/pull/130) - by [pySilver](https://github.com/pySilver)
-
-### 1.9.9 ###
-
-* Fix wp_redirect issue. [#131](https://github.com/rtCamp/nginx-helper/pull/131) - by [matt-h](https://github.com/matt-h)
-
-### 1.9.8 ###
-
-* Fixed homepage cache cleared when WPML plugin used [#116](https://github.com/rtCamp/nginx-helper/pull/116) - by [Niwreg](https://profiles.wordpress.org/niwreg/)
-* Fixed Purge Cache clears the whole Redis cache [#113](https://github.com/rtCamp/nginx-helper/issues/113) - by HansVanEijsden
-* One log file for all site in WPMU.
-* Single site Redis cache purge when click on Purge Cache button in WPMU [#122](https://github.com/rtCamp/nginx-helper/pull/122) - by Lars Støttrup Nielsen
-* Fixed notices and warnings.
-
-### 1.9.7 ###
-
-* Remove timestamp if cron or wp-cli [#114](https://github.com/rtCamp/nginx-helper/pull/114) - by [samedwards](https://profiles.wordpress.org/samedwards/)
-* Fixed notices and warnings.
-
-### 1.9.6 ###
-
-* Fixed cache purging on post publish.
-* Error fixed when redis server not installed.
-
-### 1.9.5 ###
-
-Added custom purge URL option.
-
-### 1.9.4 ###
-
-* Added redis server connection timeout.
-* Added RedisException handling.
-
-### 1.9.3 ###
-
-* Added PhpRedis API support.
-* Added redis-lua script support to purge complete cache very fast.
-* Added composer.json support
-* Fixed cache purging link in admin bar.
-* Updated the initial settings to include the 'purge_method' [#99](https://github.com/rtCamp/nginx-helper/pull/99) - by
-[gagan0123](https://github.com/gagan0123)
-
-### 1.9.2 ###
-
-Fix purging for Redis cache and FastCGI cache
-
-### 1.9.1 ###
-
-Fix purging for custom post types
-
-### 1.9 ###
-
-Added Redis cache purge support.
-
-### 1.8.13 ###
-
-Fixed PHP notice for an undefined index when "Enable Logging" is not set.
-
-### 1.8.12 ###
-
-Updated readme and changelog
-
-### 1.8.11 ###
-
-Fix url escaping [#82](https://github.com/rtCamp/nginx-helper/pull/82) - by
-[javisperez](https://github.com/javisperez)
-
-### 1.8.10 ###
-
-* Security bug fix
-
-### 1.8.9 ###
-
-* Default setting fix and wp-cli example correction - by [bcole808](https://profiles.wordpress.org/bcole808/)
-
-### 1.8.8 ###
-
-* Added option to purge cache without nginx purge module - by [bcole808](https://profiles.wordpress.org/bcole808/)
-
-### 1.8.7 ###
-
-* Added action `rt_nginx_helper_purge_all` to purge cache from other plugins - by [gungeekatx](https://profiles.wordpress.org/gungeekatx/)
-
-### 1.8.6 ###
-
-* Removed wercker.yml from plugin zip/svn.
-* Updated readme
-
-### 1.8.5 ###
-
-* Added WP_CLI support - by [Udit Desai](https://profiles.wordpress.org/desaiuditd/)
-
-### 1.8.4 ###
-
-* Fix undefined index issue and correct "purge_archive_on_del" key
-
-### 1.8.3 ###
-
-* Tested with WordPress 4.0
-* Fix issue #69
-
-### 1.8.1 ###
-
-* Tested with wordpress 3.9.1
-* Fix confilct with Mailchimp's Social plugin
-
-### 1.8 ###
-
-* New admin UI
-* Fix missing wp_sanitize_redirect function call
-
-### 1.7.6 ###
-
-* Update Backend UI
-* Added Language Support
-
-### 1.7.5 ###
-
-* Fixed option name mismatch issue to purge homepage on delete.
-
-### 1.7.4 ###
-
-* Disable purge and stamp by default.
-
-### 1.7.3 ###
-
-* Suppressed `unlink` related error-messages which can be safely ignored.
-* Fixed a bug in purge-all option.
-
-### 1.7.2 ###
-
-* [pjv](http://profiles.wordpress.org/pjv/) fixed bug in logging file.
-
-### 1.7.1 ###
-
-* Fixes bug in true purge and admin screen.
-
-### 1.7 ###
-
-* True full cache purge added.
-* Map file location changed to uploads' directory to fix http://rtcamp.com/support/topic/plugin-update-removes-map-file/
-* Log file location also changed to uploads' directory.
-
-### 1.6.13 ###
-
-* [pjv](http://profiles.wordpress.org/pjv/) changed the way home URL is accessed. Instead of site option, the plugin now uses home_URL() function.
-
-### 1.6.12 ###
-
-* [telofy](http://wordpress.org/support/profile/telofy) added purging of atom and RDF feeds.
-
-### 1.6.11 ###
-
-* Removed comments from Admin screens since, it was interfering with media uploads in 3.5 up.
-
-### 1.6.10 ###
-
-* Cleaned up code.
-* Added credits for code.
-* Improved attachment purging.
-
-### 1.6.9 ###
-
-* Added Faux to Purge all buttons, to avoid misleading users.
-
-### 1.6.8 ###
-
-* [daankortenbach](http://profiles.wordpress.org/daankortenbach) added Purge Cache link to wp-admin bar
-
-### 1.6.7 ###
-
-* [jk3us](http://profiles.wordpress.org/jk3us) added better content-type detection for cache verification comments
-
-### 1.6.6 ###
-
-* [darren-slatten](http://profiles.wordpress.org/darren-slatten/) added Manual 'Purge all URLs' functionality
-
-### 1.6.5 ###
-
-* Fixed typo that interfered with archive purge settings. Thanks to [Daan Kortenbach](http://profiles.wordpress.org/daankortenbach/) for pointing this out.
-
-### 1.6.4 ###
-
-* Improved code for map generation to better conventions since the nesting confused some servers.
-* Added map update process to admin_init for frequent refreshes.
-
-### 1.6.3 ###
-
-* Fixed duplicate entries.
-
-### 1.6.2 ###
-
-* Another bug fix in the revised code for improved multisite and multidomain mapping.
-
-### 1.6.1 ###
-
-* Fixed bug in the revised code for improved multisite and multidomain mapping.
-
-### 1.6 ###
-
-* Revised code for improved multisite and multidomain mapping.
-
-### 1.5 ###
-
-* Timestamp now only gets added to content-type text/html
-* Added option to toggle timestamp creation
-
-### 1.4 ###
-
-* Fixed bug related to nomenclature of comment status that caused purge to fail.
-
-### 1.3.9 ###
-
-* Removed extraneous headers.
-
-### 1.3.8 ###
-
-* Fixed bug in single post/page/post-type purging code. Thanks to Greg for pointing this out here: http://rtcamp.com/support/topic/updating-post-nginx-helper-purge-cache-post/.
-
-### 1.3.7 ###
-
-* Changed the action hook, back to 'shutdown' from 'wp_footer' to add verification comments.
-* Added a check to prevent adding comments to ajax requests,
-
-### 1.3.6 ###
-
-* Changed the action hook, from 'shutdown' to 'wp_footer' to add verification comments. This was interfering with other plugins.
-
-### 1.3.5 ###
-
-* Improved Readme.
-* Improved cache verification comments.
-
-### 1.3.4 ###
-
-* Fixed duplicate entries generated for maps (Harmless, but doesn't look good!)
-* Added timestamp html comments for cache verification, as described here: http://rtcamp.com/wordpress-nginx/tutorials/checklist/
-
-### 1.3.3 ###
-
-* Fixed map generation for multi domain installs using domain mapping plugin, where blog ids were not displayed.
-
-### 1.3.2 ###
-
-* Fixed map generation for multi domain installs with domain mapping plugin.
-
-### 1.3.1 ###
-
-* Minor fixes for directory structure and file names.
-
-### 1.3 ###
-
-* Improved Readme.
-
-### 1.2 ###
-
-* Fixed map generation error.
-* Fixed purging logic.
-* Fixed UI where purge settings were lost on disabling and re-enabling purge.
-* Minor Ui rearrangement.
-
-### 1.1 ###
-
-* Improved readme.txt. Added Screenshots.
-
-### 1.0 ###
-
-* First release
-
-## Upgrade Notice ##
-
-### 2.2.3 ###
-
-Nginx Helper 2.2.3, Fix performance issue when saving nav menus, purging date archives for CPTs, purge page and post URLs when the post is trashed and passes the URL being purged in "rt_nginx_helper_purge_cached_file" hook as parameter.
-
-## Does this interest you? ##
-
-<a href="https://rtcamp.com/"><img src="https://rtcamp.com/wp-content/uploads/sites/2/2019/04/github-banner@2x.png" alt="Join us at rtCamp, we specialize in providing high performance enterprise WordPress solutions"></a>
+* Add support for adding Username, Password support for Redis. It also includes the support for Unix Socket Path for Redis along with Database selection - by [Jeff Cleverley](https://github.com/gridpane)
+* Added exclude filters for cache purging of home page - by [Jeff Cleverley](https://github.com/gridpane)
+* Added Ability to configure all options by Constants - by [Jeff Cleverley](https://github.com/gridpane)
+* Added Ability to purge fastcgi cache purge using the Torden Module - by [Jeff Cleverley](https://github.com/gridpane)
+* All Previous rtCamp Nginx-Helper code up to 2.5.0
