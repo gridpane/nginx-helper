@@ -237,8 +237,6 @@ class FastCGI_Purger extends Purger {
 				break;
 		}
 
-//		$log_purge_method = '* Using: ' . $purge_method;
-//		$called_action_hook = current_filter();
 
 		$this->log( '* * * * *' );
 		$this->log( '* Purged Everything!' );
