@@ -2,17 +2,15 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  */
 
 /**
  * Description of purger
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  *
  * @subpackage nginx-helper/admin
- *
- * @author     rtCamp
  */
 abstract class Purger {
 
@@ -716,12 +714,24 @@ abstract class Purger {
 		if ( function_exists( 'icl_get_home_url' ) ) {
 
 			$homepage_url = trailingslashit( icl_get_home_url() );
-			$this->log( sprintf( __( 'Purging homepage (WPML) ', 'nginx-helper' ) . '%s', $homepage_url ) );
+			$this->log(
+				sprintf(
+					/* translators: %s homepage URL */
+					__( 'Purging homepage (WPML) %s', 'gridpane-nginx-helper' ),
+					$homepage_url
+				)
+			);
 
 		} else {
 
 			$homepage_url = trailingslashit( home_url() );
-			$this->log( sprintf( __( 'Purging homepage ', 'nginx-helper' ) . '%s', $homepage_url ) );
+			$this->log( 
+				sprintf(
+					/* translators: %s homepage URL */
+					__( 'Purging homepage %s', 'gridpane-nginx-helper' ),
+					$homepage_url
+				)
+			);
 
 		}
 
@@ -731,29 +741,6 @@ abstract class Purger {
 
 	}
 
-	/**
-	 * Purge personal urls.
-	 *
-	 * @return bool
-	 */
-	private function _purge_personal_urls() {
-
-		global $nginx_helper_admin;
-
-		$this->log( __( 'Purging personal urls', 'nginx-helper' ) );
-
-		if ( isset( $nginx_helper_admin->options['purgeable_url']['urls'] ) ) {
-
-			foreach ( $nginx_helper_admin->options['purgeable_url']['urls'] as $url ) {
-				$this->purge_url( $url, false );
-			}
-		} else {
-			$this->log( '- ' . __( 'No personal urls available', 'nginx-helper' ) );
-		}
-
-		return true;
-
-	}
 
 	/**
 	 * Purge post categories.
@@ -764,7 +751,7 @@ abstract class Purger {
 	 */
 	private function _purge_post_categories( $_post_id ) {
 
-		$this->log( __( 'Purging category archives', 'nginx-helper' ) );
+		$this->log( __( 'Purging category archives', 'gridpane-nginx-helper' ) );
 
 		$categories = wp_get_post_categories( $_post_id );
 
@@ -773,7 +760,7 @@ abstract class Purger {
 			foreach ( $categories as $category_id ) {
 
 				// translators: %d: Category ID.
-				$this->log( sprintf( __( "Purging category '%d'", 'nginx-helper' ), $category_id ) );
+				$this->log( sprintf( __( "Purging category '%d'", 'gridpane-nginx-helper' ), $category_id ) );
 				$this->purge_url( get_category_link( $category_id ) );
 
 			}
@@ -791,7 +778,7 @@ abstract class Purger {
 	 */
 	private function _purge_post_tags( $_post_id ) {
 
-		$this->log( __( 'Purging tags archives', 'nginx-helper' ) );
+		$this->log( __( 'Purging tags archives', 'gridpane-nginx-helper' ) );
 
 		$tags = get_the_tags( $_post_id );
 
@@ -799,7 +786,7 @@ abstract class Purger {
 
 			foreach ( $tags as $tag ) {
 
-				$this->log( sprintf( __( "Purging tag '%1\$s' ( id %2\$d )", 'nginx-helper' ), $tag->name, $tag->term_id ) );
+				$this->log( sprintf( __( "Purging tag '%1\$s' ( id %2\$d )", 'gridpane-nginx-helper' ), $tag->name, $tag->term_id ) );
 				$this->purge_url( get_tag_link( $tag->term_id ) );
 
 			}
@@ -818,7 +805,7 @@ abstract class Purger {
 	 */
 	private function _purge_post_custom_taxa( $_post_id ) {
 
-		$this->log( __( 'Purging post custom taxonomies related', 'nginx-helper' ) );
+		$this->log( __( 'Purging post custom taxonomies related', 'gridpane-nginx-helper' ) );
 
 		$custom_taxonomies = get_taxonomies(
 			array(
@@ -832,7 +819,7 @@ abstract class Purger {
 			foreach ( $custom_taxonomies as $taxon ) {
 
 				// translators: %s: Post taxonomy name.
-				$this->log( sprintf( '+ ' . __( "Purging custom taxonomy '%s'", 'nginx-helper' ), $taxon ) );
+				$this->log( sprintf( '+ ' . __( "Purging custom taxonomy '%s'", 'gridpane-nginx-helper' ), $taxon ) );
 
 				if ( ! in_array( $taxon, array( 'category', 'post_tag', 'link_category' ), true ) ) {
 
@@ -846,11 +833,11 @@ abstract class Purger {
 					}
 				} else {
 					// translators: %s: Post taxonomy name.
-					$this->log( sprintf( '- ' . __( "Your built-in taxonomy '%s' has param '_builtin' set to false.", 'nginx-helper' ), $taxon ), 'WARNING' );
+					$this->log( sprintf( '- ' . __( "Your built-in taxonomy '%s' has param '_builtin' set to false.", 'gridpane-nginx-helper' ), $taxon ), 'WARNING' );
 				}
 			}
 		} else {
-			$this->log( '- ' . __( 'No custom taxonomies', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No custom taxonomies', 'gridpane-nginx-helper' ) );
 		}
 
 		return true;
@@ -863,7 +850,7 @@ abstract class Purger {
 	 */
 	private function _purge_all_categories() {
 
-		$this->log( __( 'Purging all categories', 'nginx-helper' ) );
+		$this->log( __( 'Purging all categories', 'gridpane-nginx-helper' ) );
 
 		$_categories = get_categories();
 
@@ -871,13 +858,13 @@ abstract class Purger {
 
 			foreach ( $_categories as $c ) {
 
-				$this->log( sprintf( __( "Purging category '%1\$s' ( id %2\$d )", 'nginx-helper' ), $c->name, $c->term_id ) );
+				$this->log( sprintf( __( "Purging category '%1\$s' ( id %2\$d )", 'gridpane-nginx-helper' ), $c->name, $c->term_id ) );
 				$this->purge_url( get_category_link( $c->term_id ) );
 
 			}
 		} else {
 
-			$this->log( __( 'No categories archives', 'nginx-helper' ) );
+			$this->log( __( 'No categories archives', 'gridpane-nginx-helper' ) );
 
 		}
 
@@ -891,7 +878,7 @@ abstract class Purger {
 	 */
 	private function _purge_all_posttags() {
 
-		$this->log( __( 'Purging all tags', 'nginx-helper' ) );
+		$this->log( __( 'Purging all tags', 'gridpane-nginx-helper' ) );
 
 		$_posttags = get_tags();
 
@@ -899,12 +886,12 @@ abstract class Purger {
 
 			foreach ( $_posttags as $t ) {
 
-				$this->log( sprintf( __( "Purging tag '%1\$s' ( id %2\$d )", 'nginx-helper' ), $t->name, $t->term_id ) );
+				$this->log( sprintf( __( "Purging tag '%1\$s' ( id %2\$d )", 'gridpane-nginx-helper' ), $t->name, $t->term_id ) );
 				$this->purge_url( get_tag_link( $t->term_id ) );
 
 			}
 		} else {
-			$this->log( __( 'No tags archives', 'nginx-helper' ) );
+			$this->log( __( 'No tags archives', 'gridpane-nginx-helper' ) );
 		}
 
 		return true;
@@ -918,7 +905,7 @@ abstract class Purger {
 	 */
 	private function _purge_all_customtaxa() {
 
-		$this->log( __( 'Purging all custom taxonomies', 'nginx-helper' ) );
+		$this->log( __( 'Purging all custom taxonomies', 'gridpane-nginx-helper' ) );
 
 		$custom_taxonomies = get_taxonomies(
 			array(
@@ -932,7 +919,7 @@ abstract class Purger {
 			foreach ( $custom_taxonomies as $taxon ) {
 
 				// translators: %s: Taxonomy name.
-				$this->log( sprintf( '+ ' . __( "Purging custom taxonomy '%s'", 'nginx-helper' ), $taxon ) );
+				$this->log( sprintf( '+ ' . __( "Purging custom taxonomy '%s'", 'gridpane-nginx-helper' ), $taxon ) );
 
 				if ( ! in_array( $taxon, array( 'category', 'post_tag', 'link_category' ), true ) ) {
 
@@ -948,11 +935,11 @@ abstract class Purger {
 					}
 				} else {
 					// translators: %s: Taxonomy name.
-					$this->log( sprintf( '- ' . esc_html__( "Your built-in taxonomy '%s' has param '_builtin' set to false.", 'nginx-helper' ), $taxon ), 'WARNING' );
+					$this->log( sprintf( '- ' . esc_html__( "Your built-in taxonomy '%s' has param '_builtin' set to false.", 'gridpane-nginx-helper' ), $taxon ), 'WARNING' );
 				}
 			}
 		} else {
-			$this->log( '- ' . __( 'No custom taxonomies', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No custom taxonomies', 'gridpane-nginx-helper' ) );
 		}
 
 		return true;
@@ -979,7 +966,7 @@ abstract class Purger {
 	 */
 	private function _purge_all_posts() {
 
-		$this->log( __( 'Purging all posts, pages and custom post types.', 'nginx-helper' ) );
+		$this->log( __( 'Purging all posts, pages and custom post types.', 'gridpane-nginx-helper' ) );
 
 		$args = array(
 			'posts_per_page' => 0,
@@ -994,12 +981,12 @@ abstract class Purger {
 
 			foreach ( $_posts as $p ) {
 
-				$this->log( sprintf( '+ ' . __( "Purging post id '%1\$d' ( post type '%2\$s' )", 'nginx-helper' ), $p->ID, $p->post_type ) );
+				$this->log( sprintf( '+ ' . __( "Purging post id '%1\$d' ( post type '%2\$s' )", 'gridpane-nginx-helper' ), $p->ID, $p->post_type ) );
 				$this->purge_url( get_permalink( $p->ID ) );
 
 			}
 		} else {
-			$this->log( '- ' . __( 'No posts', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No posts', 'gridpane-nginx-helper' ) );
 		}
 
 		return true;
@@ -1013,7 +1000,7 @@ abstract class Purger {
 	 */
 	private function _purge_all_date_archives() {
 
-		$this->log( __( 'Purging all date-based archives.', 'nginx-helper' ) );
+		$this->log( __( 'Purging all date-based archives.', 'gridpane-nginx-helper' ) );
 
 		$this->_purge_all_daily_archives();
 		$this->_purge_all_monthly_archives();
@@ -1030,7 +1017,7 @@ abstract class Purger {
 
 		global $wpdb;
 
-		$this->log( __( 'Purging all daily archives.', 'nginx-helper' ) );
+		$this->log( __( 'Purging all daily archives.', 'gridpane-nginx-helper' ) );
 
 		$_query_daily_archives = $wpdb->prepare(
 			"SELECT YEAR(post_date) AS %s, MONTH(post_date) AS %s, DAYOFMONTH(post_date) AS %s, count(ID) as posts
@@ -1053,7 +1040,7 @@ abstract class Purger {
 
 				$this->log(
 					sprintf(
-						'+ ' . __( "Purging daily archive '%1\$s/%2\$s/%3\$s'", 'nginx-helper' ),
+						'+ ' . __( "Purging daily archive '%1\$s/%2\$s/%3\$s'", 'gridpane-nginx-helper' ),
 						$_da->year,
 						$_da->month,
 						$_da->dayofmonth
@@ -1064,7 +1051,7 @@ abstract class Purger {
 
 			}
 		} else {
-			$this->log( '- ' . __( 'No daily archives', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No daily archives', 'gridpane-nginx-helper' ) );
 		}
 
 	}
@@ -1076,7 +1063,7 @@ abstract class Purger {
 
 		global $wpdb;
 
-		$this->log( __( 'Purging all monthly archives.', 'nginx-helper' ) );
+		$this->log( __( 'Purging all monthly archives.', 'gridpane-nginx-helper' ) );
 
 		$_monthly_archives = wp_cache_get( 'nginx_helper_monthly_archives', 'nginx_helper' );
 
@@ -1104,12 +1091,12 @@ abstract class Purger {
 
 			foreach ( $_monthly_archives as $_ma ) {
 
-				$this->log( sprintf( '+ ' . __( "Purging monthly archive '%1\$s/%2\$s'", 'nginx-helper' ), $_ma->year, $_ma->month ) );
+				$this->log( sprintf( '+ ' . __( "Purging monthly archive '%1\$s/%2\$s'", 'gridpane-nginx-helper' ), $_ma->year, $_ma->month ) );
 				$this->purge_url( get_month_link( $_ma->year, $_ma->month ) );
 
 			}
 		} else {
-			$this->log( '- ' . __( 'No monthly archives', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No monthly archives', 'gridpane-nginx-helper' ) );
 		}
 
 	}
@@ -1121,7 +1108,7 @@ abstract class Purger {
 
 		global $wpdb;
 
-		$this->log( __( 'Purging all yearly archives.', 'nginx-helper' ) );
+		$this->log( __( 'Purging all yearly archives.', 'gridpane-nginx-helper' ) );
 
 		$_yearly_archives = wp_cache_get( 'nginx_helper_yearly_archives', 'nginx_helper' );
 
@@ -1149,12 +1136,12 @@ abstract class Purger {
 			foreach ( $_yearly_archives as $_ya ) {
 
 				// translators: %s: Year to purge cache.
-				$this->log( sprintf( '+ ' . esc_html__( "Purging yearly archive '%s'", 'nginx-helper' ), $_ya->year ) );
+				$this->log( sprintf( '+ ' . esc_html__( "Purging yearly archive '%s'", 'gridpane-nginx-helper' ), $_ya->year ) );
 				$this->purge_url( get_year_link( $_ya->year ) );
 
 			}
 		} else {
-			$this->log( '- ' . __( 'No yearly archives', 'nginx-helper' ) );
+			$this->log( '- ' . __( 'No yearly archives', 'gridpane-nginx-helper' ) );
 		}
 
 	}
@@ -1166,13 +1153,12 @@ abstract class Purger {
 	 */
 	public function purge_them_all() {
 
-		$this->log( __( "Let's purge everything!", 'nginx-helper' ) );
+		$this->log( __( "Let's purge everything!", 'gridpane-nginx-helper' ) );
 		$this->_purge_homepage();
-		$this->_purge_personal_urls();
 		$this->_purge_all_posts();
 		$this->_purge_all_taxonomies();
 		$this->_purge_all_date_archives();
-		$this->log( __( 'Everything purged!', 'nginx-helper' ) );
+		$this->log( __( 'Everything purged!', 'gridpane-nginx-helper' ) );
 
 		return true;
 
@@ -1195,18 +1181,18 @@ abstract class Purger {
 			return;
 		}
 
-		$this->log( __( 'Term taxonomy edited or deleted', 'nginx-helper' ) );
+		$this->log( __( 'Term taxonomy edited or deleted', 'gridpane-nginx-helper' ) );
 
 		$term           = get_term( $term_id, $taxon );
 		$current_filter = current_filter();
 
 		if ( 'edit_term' === $current_filter && ! is_wp_error( $term ) && ! empty( $term ) ) {
 
-			$this->log( sprintf( __( "Term taxonomy '%1\$s' edited, (tt_id '%2\$d', term_id '%3\$d', taxonomy '%4\$s')", 'nginx-helper' ), $term->name, $tt_id, $term_id, $taxon ) );
+			$this->log( sprintf( __( "Term taxonomy '%1\$s' edited, (tt_id '%2\$d', term_id '%3\$d', taxonomy '%4\$s')", 'gridpane-nginx-helper' ), $term->name, $tt_id, $term_id, $taxon ) );
 
 		} elseif ( 'delete_term' === $current_filter ) {
 
-			$this->log( sprintf( __( "A term taxonomy has been deleted from taxonomy '%1\$s', (tt_id '%2\$d', term_id '%3\$d')", 'nginx-helper' ), $taxon, $term_id, $tt_id ) );
+			$this->log( sprintf( __( "A term taxonomy has been deleted from taxonomy '%1\$s', (tt_id '%2\$d', term_id '%3\$d')", 'gridpane-nginx-helper' ), $taxon, $term_id, $tt_id ) );
 
 		}
 
@@ -1234,7 +1220,7 @@ abstract class Purger {
 		switch ( $action ) {
 
 			case 'save-sidebar-widgets':
-				$this->log( __( 'Widget saved, moved or removed in a sidebar', 'nginx-helper' ) );
+				$this->log( __( 'Widget saved, moved or removed in a sidebar', 'gridpane-nginx-helper' ) );
 				$this->_purge_homepage();
 				break;
 

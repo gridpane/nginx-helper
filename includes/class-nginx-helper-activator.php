@@ -4,13 +4,9 @@
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
- * @since      2.0.0
- * @link       https://rtcamp.com/nginx-helper/
- *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
  *
- * @author     rtCamp
  */
 
 /**
@@ -40,13 +36,32 @@ class Nginx_Helper_Activator {
 			return;
 		}
 
+		self::set_user_caps();
+
+		wp_schedule_event( time(), 'daily', 'rt_wp_nginx_helper_check_log_file_size_daily' );
+		
+		if ( method_exists( $nginx_helper_admin, 'store_default_options' ) ) {
+			$nginx_helper_admin->store_default_options();
+		}
+
+	}
+
+	/**
+	 * This function sets the user capabilites appropriately.
+	 */
+	public static function set_user_caps() {
+
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
 		$role = get_role( 'administrator' );
 
 		if ( empty( $role ) ) {
 
 			update_site_option(
 				'rt_wp_nginx_helper_init_check',
-				__( 'Sorry, you need to be an administrator to use Nginx Helper', 'nginx-helper' )
+				__( 'Sorry, you need to be an administrator to use Nginx Helper', 'gridpane-nginx-helper' )
 			);
 
 			return;
@@ -55,8 +70,6 @@ class Nginx_Helper_Activator {
 
 		$role->add_cap( 'Nginx Helper | Config' );
 		$role->add_cap( 'Nginx Helper | Purge cache' );
-
-		wp_schedule_event( time(), 'daily', 'rt_wp_nginx_helper_check_log_file_size_daily' );
 
 	}
 

@@ -2,15 +2,14 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  */
 
 /**
  * Description of Predis_Purger
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/admin
- * @author     rtCamp
  */
 class Predis_Purger extends Purger {
 
@@ -63,9 +62,15 @@ class Predis_Purger extends Purger {
 
 		try {
 			$this->redis_object->connect();
+			
+			if( 0 !== $nginx_helper_admin->options['redis_database'] ) {
+				$this->redis_object->select( $nginx_helper_admin->options['redis_database'] );
+			}
 		} catch ( Exception $e ) {
 			$this->log( $e->getMessage(), 'ERROR' );
+			return;
 		}
+		
 
 	}
 

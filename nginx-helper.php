@@ -1,19 +1,18 @@
 <?php
 /**
- * Plugin Name:       Nginx Helper
- * Plugin URI:        https://rtcamp.com/nginx-helper/
+ * Plugin Name:       GridPane Nginx Helper
+ * Plugin URI:        https://gridpane.com
  * Description:       Cleans nginx's fastcgi/proxy cache or redis-cache whenever a post is edited/published. Also does few more things.
- * Version:           2.2.6
- * Author:            rtCamp
- * Author URI:        https://rtcamp.com
- * Text Domain:       nginx-helper
+ * Version:           9.9.9.1
+ * Author:            GridPane
+ * Author URI:        https://gridpane.com
+ * Text Domain:       gridpane-nginx-helper
  * Domain Path:       /languages
  * Requires at least: 3.0
- * Tested up to:      6.4
+ * Tested up to:      6.8
  *
- * @link              https://rtcamp.com/nginx-helper/
- * @since             2.0.0
- * @package           nginx-helper
+ * @since             9.9.9
+ * @package           gridpane-nginx-helper
  */
 
 // If this file is called directly, abort.
