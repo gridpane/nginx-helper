@@ -2,8 +2,7 @@
 /**
  * Contains class for WP-CLI command.
  *
- * @since      2.0.0
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  */
 
 /**
@@ -37,7 +36,7 @@ if ( ! class_exists( 'Nginx_Helper_WP_CLI_Command' ) ) {
 
 			$nginx_purger->purge_all();
 
-			$message = __( 'Purged Everything!', 'nginx-helper' );
+			$message = __( 'Purged Everything!', 'gridpane-nginx-helper' );
 			WP_CLI::success( $message );
 
 		}

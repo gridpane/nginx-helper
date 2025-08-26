@@ -4,11 +4,8 @@
  *
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
- *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
- *
- * @package    nginx-helper
+
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
  */
 
@@ -18,17 +15,14 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @since      2.0.0
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
- * @author     rtCamp
  */
 class Nginx_Helper_i18n {
 
 	/**
 	 * The domain specified for this plugin.
 	 *
-	 * @since    2.0.0
 	 * @access   private
 	 * @var      string    $domain    The domain identifier for this plugin.
 	 */
@@ -37,7 +31,6 @@ class Nginx_Helper_i18n {
 	/**
 	 * Load the plugin text domain for translation.
 	 *
-	 * @since    2.0.0
 	 */
 	public function load_plugin_textdomain() {
 
