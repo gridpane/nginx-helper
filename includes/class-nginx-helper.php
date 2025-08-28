@@ -244,8 +244,6 @@ class Nginx_Helper {
 			$this->loader->add_action( 'switch_theme', $nginx_purger, 'purge_all', 100 );
 		}
 
-		$this->loader->add_filter( 'plugin_row_meta' . NGINX_HELPER_BASENAME, $nginx_helper_admin, 'remove_plugin_details_link', 10, 4 );
-
 	}
 
 	/**

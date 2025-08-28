@@ -948,18 +948,5 @@ class Nginx_Helper_Admin {
 			|| 0 !== $has_import_started
 			|| ! empty( $import_query_var );
 	}
-
-	public function remove_plugin_details_link( $plugin_meta, $plugin_file, $plugin_data, $status ) {
-		// Replace 'your-plugin-slug/your-plugin-file.php' with the actual slug of your plugin
-		if ( 'nginx-helper/nginx-helper.php' === $plugin_file ) {
-			// Unset the 'View details' link
-			foreach ( $plugin_meta as $key => $meta_link ) {
-				if ( strpos( $meta_link, 'open-plugin-details-modal' ) !== false ) {
-					unset( $plugin_meta[ $key ] );
-				}
-			}
-		}
-		return $plugin_meta;
-	}
 	
 }

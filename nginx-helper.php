@@ -68,6 +68,31 @@ register_deactivation_hook( __FILE__, 'deactivate_nginx_helper' );
  */
 require NGINX_HELPER_BASEPATH . 'includes/class-nginx-helper.php';
 
+add_action( 'load-plugins.php', 'add_plugin_details_filter' );
+add_action( 'load-update-core.php', 'add_plugin_details_filter' );
+
+function add_plugin_details_filter() {
+	add_filter( 'plugin_row_meta', 'remove_plugin_view_details_link', 10, 2 );
+}
+
+function remove_plugin_view_details_link( $plugin_meta, $plugin_file ) {
+	$target_plugin = 'nginx-helper/nginx-helper.php';
+
+	// Early return if not the target plugin
+	if ( $plugin_file !== $target_plugin ) {
+		return $plugin_meta;
+	}
+
+	foreach ( $plugin_meta as $index => $meta ) {
+		if ( strpos( $meta, 'View details' ) !== false ) {
+			unset( $plugin_meta[$index] );
+			break;
+		}
+	}
+
+	return $plugin_meta;
+}
+
 /**
  * Begins execution of the plugin.
  *
