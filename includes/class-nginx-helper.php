@@ -170,6 +170,10 @@ class Nginx_Helper {
 
 		$nginx_helper_admin = new Nginx_Helper_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		# New Line to fix tex domain issues as we've moved the setting tab
+	    $this->loader->add_action( 'init', $nginx_helper_admin, 'initialize_setting_tab' );
+
+
 		// Defines global variables.
 		if ( ! empty( $nginx_helper_admin->options['cache_method'] ) && 'enable_redis' === $nginx_helper_admin->options['cache_method'] ) {
 
