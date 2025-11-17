@@ -236,7 +236,7 @@ class Nginx_Helper {
 			$this->loader->add_action( 'activated_plugin', $nginx_purger, 'purge_all', 100 );
 		}
 
-		if ( ! empty( $nginx_helper_admin->options['purge_on_update'] ) ) {
+		if ( ! empty( $nginx_helper_admin->options['purge_on_plugin_deactivation'] ) ) {
 			$this->loader->add_action( 'deactivated_plugin', $nginx_purger, 'purge_all', 100 );
 		}
 
