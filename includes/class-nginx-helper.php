@@ -240,7 +240,7 @@ class Nginx_Helper {
 			$this->loader->add_action( 'deactivated_plugin', $nginx_purger, 'purge_all', 100 );
 		}
 
-		if ( ! empty( $nginx_helper_admin->options['purge_on_update'] ) ) {
+		if ( ! empty( $nginx_helper_admin->options['purge_on_theme_change'] ) ) {
 			$this->loader->add_action( 'switch_theme', $nginx_purger, 'purge_all', 100 );
 		}
 
