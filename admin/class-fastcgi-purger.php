@@ -2,19 +2,15 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
- *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/admin
  */
 
 /**
  * Description of FastCGI_Purger
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/admin
- * @author     rtCamp
  */
 class FastCGI_Purger extends Purger {
 
@@ -94,7 +90,30 @@ class FastCGI_Purger extends Purger {
 				break;
 
 		}
+		
+		if( ( is_page() || is_single() ) && $nginx_helper_admin->options['purge_amp_urls'] ) {
+			$this->purge_amp_version( $url );
+		}
 
+	}
+	
+	/**
+	 * Purge AMP version of a URL.
+	 *
+	 * @param string $url_base The base URL to purge.
+	 */
+	private function purge_amp_version( $url_base ) {
+		global $nginx_helper_admin;
+
+		$amp_url = sprintf( '%s/amp/', rtrim( $url_base, '/' ) );
+		
+		$this->log( '- Purging AMP URL | ' . $amp_url );
+		
+		if ( 'unlink_files' === $nginx_helper_admin->options['purge_method'] ) {
+			$this->delete_cache_file_for( $amp_url );
+		} else {
+			$this->do_remote_get( $amp_url );
+		}
 	}
 
 	/**
@@ -218,11 +237,11 @@ class FastCGI_Purger extends Purger {
 				break;
 		}
 
-		$log_purge_method = '* Using: ' . $purge_method;
 
 		$this->log( '* * * * *' );
 		$this->log( '* Purged Everything!' );
-		$this->log( $log_purge_method );
+		$this->log( '* Using: ' . $purge_method );
+		$this->log( '* Filter: ' . current_filter() );
 		$this->log( '* * * * *' );
 
 		/**

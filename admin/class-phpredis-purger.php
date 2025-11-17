@@ -2,17 +2,14 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
- *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/admin
  */
 
 /**
  * Description of PhpRedis_Purger
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/admin
  * @author     rtCamp
  */
@@ -69,6 +66,10 @@ class PhpRedis_Purger extends Purger {
 				1.5,
 				$redis_connection_others_array
 			);
+			
+			if( $nginx_helper_admin->options['redis_database'] !== 0 ) {
+				$this->redis_object->select($nginx_helper_admin->options['redis_database']);
+			}
 
 			$redis_database = $nginx_helper_admin->options['redis_database'];
 
@@ -106,6 +107,7 @@ class PhpRedis_Purger extends Purger {
 
 		}
 
+		$this->log( '* Filter: ' . current_filter() );
 		if ( $total_keys_purged ) {
 			$this->log( "Total {$total_keys_purged} urls purged." );
 		} else {

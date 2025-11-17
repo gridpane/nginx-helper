@@ -2,7 +2,7 @@
 /**
  * Silence is golden.
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  */
 
 // Silence.

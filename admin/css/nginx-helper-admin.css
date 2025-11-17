@@ -4,7 +4,7 @@
  */
 
 .clearfix {
-	*zoom: 1;
+	zoom: 1;
 }
 .clearfix:before,
 .clearfix:after {
@@ -36,7 +36,7 @@ pre#map {
 	padding: 10px;
 }
 .wrap h2.rt_option_title {
-	background: url(../icons/nginx-icon-32x32.png) 0 6px no-repeat rgba(0, 0, 0, 0);
+	background: url(../icons/nginx-logo-32x32.png) 0 6px no-repeat rgba(0, 0, 0, 0);
 	padding-left: 40px;
 }
 #poststuff h2 {
@@ -102,4 +102,19 @@ form#purgeall .button-primary:focus {
 .enable-logging-message {
 	font-size: 13px;
 	margin-left: 23px;
+}
+
+.password-input {
+	padding-right: 40px;
+}
+
+.password-show-hide-btn {
+	background-color: transparent;
+	border: 0;
+	cursor: pointer;
+	display: inline-block;
+}
+
+.password-wrapper {
+	display: flex;
 }

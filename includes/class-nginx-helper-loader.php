@@ -2,10 +2,7 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
- *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
  */
 
@@ -16,11 +13,10 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  *
  * @subpackage nginx-helper/includes
  *
- * @author     rtCamp
  */
 class Nginx_Helper_Loader {
 

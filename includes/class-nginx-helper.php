@@ -5,10 +5,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://rtcamp.com/nginx-helper/
- * @since      2.0.0
- *
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
  */
 
@@ -21,10 +18,8 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
- * @since      2.0.0
- * @package    nginx-helper
+ * @package    gridpane-nginx-helper
  * @subpackage nginx-helper/includes
- * @author     rtCamp
  */
 class Nginx_Helper {
 
@@ -77,7 +72,7 @@ class Nginx_Helper {
 	public function __construct() {
 
 		$this->plugin_name = 'nginx-helper';
-		$this->version     = '2.2.5';
+		$this->version     = '9.9.10';
 		$this->minimum_wp  = '3.0';
 
 		if ( ! $this->required_wp_version() ) {
@@ -85,7 +80,8 @@ class Nginx_Helper {
 		}
 
 		if ( ! defined( 'RT_WP_NGINX_HELPER_CACHE_PATH' ) ) {
-			define( 'RT_WP_NGINX_HELPER_CACHE_PATH', '/var/run/nginx-cache' );
+			$cache_path = apply_filters( 'rt_wp_nginx_helper_cache_path', '/var/run/nginx-cache' );
+			define( 'RT_WP_NGINX_HELPER_CACHE_PATH', $cache_path  );
 		}
 
 		$this->load_dependencies();
@@ -173,7 +169,6 @@ class Nginx_Helper {
 		# New Line to fix tex domain issues as we've moved the setting tab
 	    $this->loader->add_action( 'init', $nginx_helper_admin, 'initialize_setting_tab' );
 
-
 		// Defines global variables.
 		if ( ! empty( $nginx_helper_admin->options['cache_method'] ) && 'enable_redis' === $nginx_helper_admin->options['cache_method'] ) {
 
@@ -231,6 +226,27 @@ class Nginx_Helper {
 
 		// expose action to allow other plugins to purge the cache.
 		$this->loader->add_action( 'rt_nginx_helper_purge_all', $nginx_purger, 'purge_all' );
+		
+		// add action to preload the cache
+		$this->loader->add_action( 'admin_init', $nginx_helper_admin, 'preload_cache' );
+		$this->loader->add_action( 'plugins_loaded', $this, 'handle_nginx_helper_upgrade' );
+
+		if ( ! empty( $nginx_helper_admin->options['purge_on_update'] ) ) {
+			$this->loader->add_action( 'upgrader_process_complete', $nginx_purger, 'purge_all', 100 );
+		}
+
+		if ( ! empty( $nginx_helper_admin->options['purge_on_plugin_activation'] ) ) {
+			$this->loader->add_action( 'activated_plugin', $nginx_purger, 'purge_all', 100 );
+		}
+
+		if ( ! empty( $nginx_helper_admin->options['purge_on_plugin_deactivation'] ) ) {
+			$this->loader->add_action( 'deactivated_plugin', $nginx_purger, 'purge_all', 100 );
+		}
+
+		if ( ! empty( $nginx_helper_admin->options['purge_on_theme_change'] ) ) {
+			$this->loader->add_action( 'switch_theme', $nginx_purger, 'purge_all', 100 );
+		}
+
 	}
 
 	/**
@@ -312,7 +328,7 @@ class Nginx_Helper {
 				<?php
 				printf(
 					/* translators: %s is Minimum WP version. */
-					esc_html__( 'Sorry, Nginx Helper requires WordPress %s or higher', 'nginx-helper' ),
+					esc_html__( 'Sorry, Nginx Helper requires WordPress %s or higher', 'gridpane-nginx-helper' ),
 					esc_html( $this->minimum_wp )
 				);
 				?>
@@ -320,5 +336,21 @@ class Nginx_Helper {
 		</p>
 	</div>
 		<?php
+	}
+
+	/**
+	 * Detects when plugin version changes and updates accordingly.
+	 */
+	public function handle_nginx_helper_upgrade() {
+		$installed_version = get_option( 'nginx_helper_version', '0' );
+
+		if ( version_compare( $installed_version, $this->get_version() ) !== 0) {
+
+			require_once NGINX_HELPER_BASEPATH . 'includes/class-nginx-helper-activator.php';
+			Nginx_Helper_Activator::set_user_caps();
+
+			update_option( 'nginx_helper_version', $this->get_version() );
+		}
+
 	}
 }
