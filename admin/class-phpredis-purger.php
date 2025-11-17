@@ -107,6 +107,7 @@ class PhpRedis_Purger extends Purger {
 
 		}
 
+		$this->log( '* Filter: ' . current_filter() );
 		if ( $total_keys_purged ) {
 			$this->log( "Total {$total_keys_purged} urls purged." );
 		} else {
