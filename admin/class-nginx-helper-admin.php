@@ -74,10 +74,20 @@ class Nginx_Helper_Admin {
 	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
+	    $this->plugin_name = $plugin_name;
+	    $this->version     = $version;
 
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+	    // Initialize options early.
+	    $this->options = $this->nginx_helper_settings();
+	}
 
+
+	/**
+	 * Initialize the settings tab.
+	 * Required since i18n is used in the settings tab which can be invoked only after init hook since WordPress 6.7
+	 */
+	public function initialize_setting_tab() {
+		
 		/**
 		 * Define settings tabs
 		 */
@@ -94,10 +104,8 @@ class Nginx_Helper_Admin {
 				),
 			)
 		);
-
-		$this->options = $this->nginx_helper_settings();
-
 	}
+
 
 	/**
 	 * Register the stylesheets for the admin area.
