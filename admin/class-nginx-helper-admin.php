@@ -70,11 +70,11 @@ class Nginx_Helper_Admin {
 	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
+	    $this->plugin_name = $plugin_name;
+	    $this->version     = $version;
 
-		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
-
-		$this->options = $this->nginx_helper_settings();
+	    // Initialize options early.
+	    $this->options = $this->nginx_helper_settings();
 	}
 
 	/**
@@ -100,6 +100,7 @@ class Nginx_Helper_Admin {
 			)
 		);
 	}
+
 
 	/**
 	 * Register the stylesheets for the admin area.
